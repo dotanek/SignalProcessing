@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SignalProcessing.Logic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,18 @@ namespace SignalProcessing
         public MainWindow()
         {
             InitializeComponent();
+            TextBlock logTextBlock = (TextBlock)FindName("LogTextBlock");
+            SignalGenerator signalGenerator = new SignalGenerator(5);
+            List<double> values = signalGenerator.Generate(0,10,1,SignalGenerator.Type.UniformDistributionNoice);
+
+            string output = "";
+
+            foreach (double value in values)
+            {
+                output += value + "\n";
+            }
+
+            logTextBlock.Text = output;
         }
     }
 }
