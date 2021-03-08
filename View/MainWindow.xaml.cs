@@ -14,6 +14,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using LiveCharts;
+using LiveCharts.Wpf;
+using SignalProcessing.Model;
+using LiveCharts.Defaults;
+
 namespace SignalProcessing
 {
     /// <summary>
@@ -21,21 +26,32 @@ namespace SignalProcessing
     /// </summary>
     public partial class MainWindow : Window
     {
+        public CartesianChart Chart;
+
         public MainWindow()
         {
             InitializeComponent();
-            TextBlock logTextBlock = (TextBlock)FindName("LogTextBlock");
-            SignalGenerator signalGenerator = new SignalGenerator(5);
-            List<double> values = signalGenerator.Generate(0,10,1,SignalGenerator.Type.UniformDistributionNoice);
+            Chart = (CartesianChart)FindName("Test");
 
-            string output = "";
+            SignalGenerator signalGenerator = new SignalGenerator(2,0,10,0.1);
+            Signal signal = signalGenerator.Generate(SignalGenerator.Type.Sinusoidal);
 
-            foreach (double value in values)
+           /* Chart.AxisY.Clear();
+            Chart.AxisY.Add(
+                new Axis
+                {
+                    MinValue = signal.Values.Min() - 1,
+                    MaxValue = signal.Values.Max() + 1
+                }
+             );*/
+
+            Chart.Series = new SeriesCollection
             {
-                output += value + "\n";
-            }
-
-            logTextBlock.Text = output;
+                new LineSeries
+                {
+                    Values = signal.GetPlottableValues()
+                }
+            };
         }
     }
 }

@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SignalProcessing"
         mc:Ignorable="d"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <TextBlock x:Name="LogTextBlock"/>
+        <!--<TextBlock x:Name="LogTextBlock"/>-->
+        <lvc:CartesianChart x:Name="Test"></lvc:CartesianChart>
     </Grid>
 </Window>

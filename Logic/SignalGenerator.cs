@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SignalProcessing.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,12 @@ namespace SignalProcessing.Logic
 {
     class SignalGenerator
     {
-        private double Amplitude;
-        private Random Rand;
+        public double Amplitude { get; set; }
+        public double StartTime { get; set; }
+        public double Duration { get; set; }
+        public double Period { get; set; }
+
+        private Random Rand; 
 
         public enum Type
         {
@@ -26,15 +31,18 @@ namespace SignalProcessing.Logic
             ImpulseNoice // S11
         }
 
-        public SignalGenerator(double amplitude)
+        public SignalGenerator(double amplitude, double startTime, double duration, double period)
         {
-            Amplitude = amplitude;
             Rand = new Random();
+            Amplitude = amplitude;
+            StartTime = startTime;
+            Duration = duration;
+            Period = period;
         }
 
         public delegate double Generator(double time);
 
-        public List<double> Generate(double startTime, double duration, double period, Type type)
+        public Signal Generate(Type type)
         {
             Generator generator = null;
 
@@ -56,12 +64,12 @@ namespace SignalProcessing.Logic
 
             List<double> values = new List<double>();
 
-            for (double t = startTime; t < startTime + duration; t += period)
+            for (double t = StartTime; t <= StartTime + Duration; t += Period)
             {
                 values.Add(generator(t));
             }
 
-            return values;
+            return new Signal(StartTime, Period, values);
         }
 
         // Signal generators.
@@ -78,7 +86,9 @@ namespace SignalProcessing.Logic
 
         private double Sinusoidal(double time)
         {
-            return 0;
+            double test = (2 * Math.PI / Period) * (time - StartTime);
+            double test2 = Math.Sin(test);
+            return Amplitude * test2;
         }
 
         private double OneHalfRectSinusoidal(double time)
