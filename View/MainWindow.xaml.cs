@@ -33,23 +33,24 @@ namespace SignalProcessing
             InitializeComponent();
             Chart = (CartesianChart)FindName("Test");
 
-            SignalGenerator signalGenerator = new SignalGenerator(2,0,10,0.1);
-            Signal signal = signalGenerator.Generate(SignalGenerator.Type.Sinusoidal);
+            SignalGenerator signalGenerator = new SignalGenerator
+            {
+                Amplitude = 5,
+                Period = 3,
+                FillFactor = 0.5,
+                Duration = 20,
+                JumpTime = 10
+            };
 
-           /* Chart.AxisY.Clear();
-            Chart.AxisY.Add(
-                new Axis
-                {
-                    MinValue = signal.Values.Min() - 1,
-                    MaxValue = signal.Values.Max() + 1
-                }
-             );*/
+            Signal signal = signalGenerator.Generate(SignalGenerator.Type.GaussianNoice);
 
             Chart.Series = new SeriesCollection
             {
                 new LineSeries
                 {
-                    Values = signal.GetPlottableValues()
+                    Values = new ChartValues<ObservablePoint>(signal.Values),
+                    PointGeometry = null,
+                    LineSmoothness = 0
                 }
             };
         }

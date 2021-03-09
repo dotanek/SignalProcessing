@@ -1,4 +1,5 @@
-﻿using SignalProcessing.Model;
+﻿using LiveCharts.Defaults;
+using SignalProcessing.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,11 @@ namespace SignalProcessing.Logic
         public double StartTime { get; set; }
         public double Duration { get; set; }
         public double Period { get; set; }
+        public double FillFactor { get; set; }
+        public double JumpTime { get; set; }
+        public int SampleAmount { get; set; }
 
-        private Random Rand; 
+        private Random Random; 
 
         public enum Type
         {
@@ -31,13 +35,15 @@ namespace SignalProcessing.Logic
             ImpulseNoice // S11
         }
 
-        public SignalGenerator(double amplitude, double startTime, double duration, double period)
-        {
-            Rand = new Random();
-            Amplitude = amplitude;
-            StartTime = startTime;
-            Duration = duration;
-            Period = period;
+        public SignalGenerator() {
+            Random = new Random();
+            Amplitude = 1d;
+            StartTime = 0d;
+            Duration = 10d;
+            Period = 1d;
+            FillFactor = 0.5d;
+            JumpTime = 0d;
+            SampleAmount = 1000;
         }
 
         public delegate double Generator(double time);
@@ -62,11 +68,19 @@ namespace SignalProcessing.Logic
                 default: throw new Exception("Unknown signal type.");
             }
 
-            List<double> values = new List<double>();
+            List<ObservablePoint> values = new List<ObservablePoint>();
 
-            for (double t = StartTime; t <= StartTime + Duration; t += Period)
+            double step = Duration / SampleAmount;
+
+            for (double t = StartTime; t <= StartTime + Duration; t += step)
             {
-                values.Add(generator(t));
+                values.Add(
+                    new ObservablePoint
+                    {
+                        X = t,
+                        Y = generator(t)
+                    }
+                );
             }
 
             return new Signal(StartTime, Period, values);
@@ -76,48 +90,85 @@ namespace SignalProcessing.Logic
 
         private double UniformDistributionNoice(double time)
         {
-            return Rand.NextDouble() * 2 * Amplitude - Amplitude;
+            return Random.NextDouble() * 2 * Amplitude - Amplitude;
         }
 
-        private double GaussianNoice(double time)
+        private double GaussianNoice(double time) // Inspired by the double dice throw distribution.
         {
-            return 0;
+            double multiplier = 2 * Amplitude / 10; 
+            double random = 0;
+
+            for (int i = 0; i < 10; i++)
+            {
+                random += Random.NextDouble() * multiplier;
+            }
+
+            return random - Amplitude;
         }
 
         private double Sinusoidal(double time)
         {
-            double test = (2 * Math.PI / Period) * (time - StartTime);
-            double test2 = Math.Sin(test);
-            return Amplitude * test2;
+            return Amplitude * Math.Sin((2 * Math.PI / Period) * (time - StartTime));
         }
 
         private double OneHalfRectSinusoidal(double time)
         {
-            return 0;
+            return Amplitude / 2 * Sinusoidal(time) + Math.Abs(Sinusoidal(time));
         }
 
         private double TwoHalfRectSinusoidal(double time)
         {
-            return 0;
+            return Amplitude * Math.Abs(Sinusoidal(time));
         }
 
         private double Rectangular(double time)
         {
+            int k = (int)(time / Period);
+
+            if (time > k * Period + StartTime && time < k * Period + StartTime + (FillFactor * Period))
+            {
+                return Amplitude;
+            }
+
             return 0;
         }
 
         private double SymetricRectangular(double time)
         {
-            return 0;
+            int k = (int)(time / Period);
+
+            if (time >= k * Period + StartTime && time < k * Period + StartTime + (FillFactor * Period))
+            {
+                return Amplitude;
+            }
+
+            return -Amplitude;
         }
 
         private double Triangular(double time)
         {
-            return 0;
+            int k = (int)(time / Period);
+
+            if (time >= k * Period + StartTime && time < k * Period + StartTime + (FillFactor * Period))
+            {
+                return Amplitude / (FillFactor * Period) * (time - k * Period - StartTime);
+            }
+
+            return -Amplitude / (Period * (1 - FillFactor)) * (time - k * Period - StartTime) + Amplitude / (1 - FillFactor);
         }
 
         private double UnitJump(double time)
         {
+            if (time > JumpTime)
+            {
+                return Amplitude;
+            }
+
+            if (time == JumpTime)
+            {
+                return Amplitude / 2;
+            }
+
             return 0;
         }
 
