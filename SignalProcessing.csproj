@@ -61,6 +61,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="View\Controls\NavigationBar.xaml.cs">
+      <DependentUpon>NavigationBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Model\MainViewModel.cs" />
+    <Compile Include="View\Model\ViewModelBase.cs" />
+    <Page Include="View\Controls\NavigationBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

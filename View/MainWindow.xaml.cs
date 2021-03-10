@@ -28,21 +28,20 @@ namespace SignalProcessing
     {
         public CartesianChart Chart;
 
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
+
         public MainWindow()
         {
             InitializeComponent();
             Chart = (CartesianChart)FindName("Test");
 
-            SignalGenerator signalGenerator = new SignalGenerator
-            {
-                Amplitude = 5,
-                Period = 3,
-                FillFactor = 0.5,
-                Duration = 20,
-                JumpTime = 10
-            };
+            SignalGenerator signalGenerator = new SignalGenerator();
 
-            Signal signal = signalGenerator.Generate(SignalGenerator.Type.GaussianNoice);
+            Signal signal = signalGenerator.Generate(SignalGenerator.Type.Sinusoidal);
 
             Chart.Series = new SeriesCollection
             {
@@ -50,7 +49,7 @@ namespace SignalProcessing
                 {
                     Values = new ChartValues<ObservablePoint>(signal.Values),
                     PointGeometry = null,
-                    LineSmoothness = 0
+                    LineSmoothness = 0,
                 }
             };
         }

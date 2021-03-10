@@ -6,9 +6,17 @@
         xmlns:local="clr-namespace:SignalProcessing"
         mc:Ignorable="d"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <!--<TextBlock x:Name="LogTextBlock"/>-->
-        <lvc:CartesianChart x:Name="Test"></lvc:CartesianChart>
+        Title="MainWindow" Height="450" Width="800"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        xmlns:Controls="clr-namespace:SignalProcessing.View.Controls">
+
+    <Grid Background="#1B1F46">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Controls:NavigationBar Grid.Row="0"></Controls:NavigationBar>
+        <lvc:CartesianChart Height="380" Width="700" Grid.Row="1" Name="Test"></lvc:CartesianChart>
     </Grid>
 </Window>

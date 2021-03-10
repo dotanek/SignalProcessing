@@ -15,7 +15,8 @@ namespace SignalProcessing.Logic
         public double Duration { get; set; }
         public double Period { get; set; }
         public double FillFactor { get; set; }
-        public double JumpTime { get; set; }
+        public double JumpTime { get; set; } // Used for both Jump and Impulse signals.
+        public double Probability { get; set; }
         public int SampleAmount { get; set; }
 
         private Random Random; 
@@ -43,6 +44,7 @@ namespace SignalProcessing.Logic
             Period = 1d;
             FillFactor = 0.5d;
             JumpTime = 0d;
+            Probability = 0.5d;
             SampleAmount = 1000;
         }
 
@@ -174,11 +176,24 @@ namespace SignalProcessing.Logic
 
         private double UnitImpulse(double time)
         {
+            double step = Duration / SampleAmount;
+            if (JumpTime > time && JumpTime < time + step)
+            {
+                return Amplitude;
+            }
+
             return 0;
         }
 
         private double ImpulseNoice(double time)
         {
+            double random = Random.NextDouble();
+
+            if (random <= Probability)
+            {
+                return Amplitude;
+            }
+
             return 0;
         }
     }
