@@ -19,6 +19,8 @@ using LiveCharts.Wpf;
 using SignalProcessing.Model;
 using LiveCharts.Defaults;
 using SignalProcessing.View;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SignalProcessing
 {
@@ -59,14 +61,20 @@ namespace SignalProcessing
             signalGenerator.JumpTime = 5;
             
             Signal signal = signalGenerator.Generate((SignalGenerator.Type)SignalComboBox.SelectionBoxItem);
-            
-            Signal signal2 = signalGenerator.Generate(SignalGenerator.Type.Sinusoidal);
-            Signal signal3 = SignalOperations.Add(signal, signal2);
 
-            double average = signal.Variation();
-            signal.Discrete = true;
-            average = signal.Variation();
-            
+            Stream stream = File.Open("Signal.sig", FileMode.Create);
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+            binaryFormatter.Serialize(stream, signal);
+
+            stream.Close();
+
+            signal = null;
+
+            stream = File.Open("Signal.sig", FileMode.Open);
+
+            signal = (Signal)binaryFormatter.Deserialize(stream);
+
             Window chartWindow = new ChartWindow(signal);
             chartWindow.Show();
         }
