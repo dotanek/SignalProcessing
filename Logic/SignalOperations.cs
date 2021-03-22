@@ -30,7 +30,7 @@ namespace SignalProcessing.Logic
                 );
             }
 
-            return new Signal(s1.StartTime, s1.Duration,s1.Period, s1.Discrete, s1.SampleAmount, values);
+            return new Signal(s1.StartTime, s1.Duration,s1.Period, s1.Discrete, s1.Frequency, values);
         }
 
         public static Signal Subtract(Signal s1, Signal s2)
@@ -53,7 +53,7 @@ namespace SignalProcessing.Logic
                 );
             }
 
-            return new Signal(s1.StartTime, s1.Duration, s1.Period, s1.Discrete, s1.SampleAmount, values);
+            return new Signal(s1.StartTime, s1.Duration, s1.Period, s1.Discrete, s1.Frequency, values);
         }
 
         public static Signal Multiply(Signal s1, Signal s2)
@@ -76,7 +76,7 @@ namespace SignalProcessing.Logic
                 );
             }
 
-            return new Signal(s1.StartTime, s1.Duration, s1.Period, s1.Discrete, s1.SampleAmount, values);
+            return new Signal(s1.StartTime, s1.Duration, s1.Period, s1.Discrete, s1.Frequency, values);
         }
 
         public static Signal Divide(Signal s1, Signal s2)
@@ -99,14 +99,14 @@ namespace SignalProcessing.Logic
                 );
             }
 
-            return new Signal(s1.StartTime, s1.Duration, s1.Period, s1.Discrete, s1.SampleAmount, values);
+            return new Signal(s1.StartTime, s1.Duration, s1.Period, s1.Discrete, s1.Frequency, values);
         }
 
         private static bool CheckCompatibility(Signal s1, Signal s2)
         {
             if (s1.StartTime != s2.StartTime) return false;
             if (s1.Duration != s2.Duration) return false;
-            if (s1.SampleAmount != s2.SampleAmount) return false;
+            if (s1.Frequency != s2.Frequency) return false;
             return true;
         }
     }

@@ -18,7 +18,6 @@ namespace SignalProcessing.Logic
         public double JumpTime { get; set; } // Used for both Jump and Impulse signals.
         public double Probability { get; set; }
         public double Frequency { get; set; }
-        public int SampleAmount { get; set; }
 
         private Random Random; 
 
@@ -179,7 +178,7 @@ namespace SignalProcessing.Logic
 
         private double UnitImpulse(double time)
         {
-            double step = Duration / SampleAmount;
+            double step = 1.0 / Frequency;
             if (JumpTime >= time && JumpTime < time + step)
             {
                 return Amplitude;

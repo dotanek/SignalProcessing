@@ -5,17 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SignalProcessing.Model
 {
-    public class Signal
+    [Serializable]
+    public class Signal : ISerializable
     {
         public double StartTime { get; }
         public double Duration { get; }
         public double Period { get; }
         public bool Discrete { get; set; }
         public double Frequency { get; }
-        public int SampleAmount { get; set; }
         public List<ObservablePoint> Values { get; }
 
         public Signal(double startTime, double duration, double period, bool discrete, double frequency, List<ObservablePoint> values)
@@ -116,6 +118,39 @@ namespace SignalProcessing.Model
             }
 
             return valueFrequencies;
+        }
+
+        // Serialization
+        public Signal(SerializationInfo info, StreamingContext context)
+        {
+            StartTime = (double)info.GetValue("StartTime", typeof(double));
+            Period = (double)info.GetValue("Period", typeof(double));
+            Frequency = (double)info.GetValue("Frequency", typeof(double));
+
+            List<double> values = (List<double>)info.GetValue("Values", typeof(List<double>));
+            Values = new List<ObservablePoint>();
+            double step = 1.0 / Frequency;
+            for (int i = 0; i < values.Count; i++)
+            {
+                Values.Add(
+                    new ObservablePoint
+                    {
+                        X = StartTime + i * step,
+                        Y = values.ElementAt(i)
+                    }
+                );
+            }
+
+            Duration = Values.Count * step;
+            Discrete = true;
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("StartTime", StartTime);
+            info.AddValue("Period", StartTime);
+            info.AddValue("Frequency", Frequency);
+            info.AddValue("Values", Values.Select(v => v.Y).ToList());
         }
     }
 }
