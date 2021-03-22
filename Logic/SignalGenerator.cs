@@ -43,7 +43,7 @@ namespace SignalProcessing.Logic
             Duration = 10d;
             Period = 1d;
             FillFactor = 0.5d;
-            JumpTime = 0d;
+            JumpTime = 5d;
             Probability = 0.5d;
             SampleAmount = 1000;
         }
@@ -53,6 +53,8 @@ namespace SignalProcessing.Logic
         public Signal Generate(Type type)
         {
             Generator generator = null;
+
+            bool discrete = false;
 
             switch (type)
             {
@@ -65,8 +67,8 @@ namespace SignalProcessing.Logic
                 case Type.SymetricRectangular: generator = SymetricRectangular; break;
                 case Type.Triangular: generator = Triangular; break;
                 case Type.UnitJump: generator = UnitJump; break;
-                case Type.UnitImpulse: generator = UnitImpulse; break;
-                case Type.ImpulseNoice: generator = ImpulseNoice; break;
+                case Type.UnitImpulse: generator = UnitImpulse; discrete = true; break;
+                case Type.ImpulseNoice: generator = ImpulseNoice; discrete = true; break;
                 default: throw new Exception("Unknown signal type.");
             }
 
@@ -85,7 +87,7 @@ namespace SignalProcessing.Logic
                 );
             }
 
-            return new Signal(StartTime, Period, values);
+            return new Signal(StartTime, Duration, Period, discrete, SampleAmount, values);
         }
 
         // Signal generators.
@@ -100,7 +102,7 @@ namespace SignalProcessing.Logic
             double multiplier = 2 * Amplitude / 10; 
             double random = 0;
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 random += Random.NextDouble() * multiplier;
             }
@@ -177,7 +179,7 @@ namespace SignalProcessing.Logic
         private double UnitImpulse(double time)
         {
             double step = Duration / SampleAmount;
-            if (JumpTime > time && JumpTime < time + step)
+            if (JumpTime >= time && JumpTime < time + step)
             {
                 return Amplitude;
             }

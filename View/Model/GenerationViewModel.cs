@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace SignalProcessing.View.Model
 {
-    class MainViewModel : BaseViewModel
+    class GenerationViewModel : BaseViewModel
     {
-
     }
 }

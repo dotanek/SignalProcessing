@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalProcessing.View
+namespace SignalProcessing.View.Model
 {
-    class ViewModelBase
+    class LoadViewModel : BaseViewModel
     {
+
     }
 }

@@ -39,19 +39,56 @@ namespace SignalProcessing
             InitializeComponent();
             Chart = (CartesianChart)FindName("Test");
 
-            SignalGenerator signalGenerator = new SignalGenerator();
+            SignalGenerator signalGenerator = new SignalGenerator
+            {
+                Period = 1
+            };
+            signalGenerator.JumpTime = 2.5;
+            Signal signal = signalGenerator.Generate(SignalGenerator.Type.Triangular);
+            
+            Signal signal2 = signalGenerator.Generate(SignalGenerator.Type.Sinusoidal);
+            Signal signal3 = SignalOperations.Add(signal, signal2);
 
-            Signal signal = signalGenerator.Generate(SignalGenerator.Type.Sinusoidal);
+            signal2.Average();
+
+            Chart.AxisY.Clear();
+            Chart.AxisY.Add(
+                new Axis
+                {
+                    /*MinValue = 0,*/
+                }
+            );
+
+            double separator = (signal.Values.Max(v => v.Y) - signal.Values.Min(v => v.Y)) / 15;
+
+            Chart.AxisX.Clear();
+            Chart.AxisX.Add(
+                new Axis
+                {
+                    Separator = new LiveCharts.Wpf.Separator
+                    {
+                        Step = separator
+                    },
+                }
+            );
 
             Chart.Series = new SeriesCollection
             {
                 new LineSeries
                 {
-                    Values = new ChartValues<ObservablePoint>(signal.Values),
+                    Values = new ChartValues<ObservablePoint>(signal3.Values),
                     PointGeometry = null,
-                    LineSmoothness = 0,
                 }
             };
+
+            /*Chart.Series = new SeriesCollection
+            {
+                new ColumnSeries
+                {
+                    Values = new ChartValues<ObservablePoint>(signal.GetHistogramPlot(15)),
+                    PointGeometry = null,
+                }
+            };*/
         }
     }
 }

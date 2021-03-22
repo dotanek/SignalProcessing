@@ -11,12 +11,12 @@
         WindowStyle="None"
         xmlns:Controls="clr-namespace:SignalProcessing.View.Controls">
 
-    <Grid Background="#1B1F46">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Controls:NavigationBar Grid.Row="0"></Controls:NavigationBar>
-        <lvc:CartesianChart Height="380" Width="700" Grid.Row="1" Name="Test"></lvc:CartesianChart>
+        <!--<Controls:NavigationBar Grid.Row="0"></Controls:NavigationBar>-->
+        <lvc:CartesianChart Grid.Row="1" Name="Test" />
     </Grid>
 </Window>
