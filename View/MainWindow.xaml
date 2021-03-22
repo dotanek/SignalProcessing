@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SignalProcessing"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="900"
+        Title="MainWindow" Height="350" Width="900"
         ResizeMode="NoResize"
         WindowStyle="ToolWindow"
         xmlns:Controls="clr-namespace:SignalProcessing.View.Controls">
@@ -22,19 +22,21 @@
         
         <Grid Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"></RowDefinition> 
-                <RowDefinition Height="auto"></RowDefinition> 
-                <RowDefinition Height="auto"></RowDefinition> 
-                <RowDefinition Height="auto"></RowDefinition> 
-                <RowDefinition Height="auto"></RowDefinition> 
-                <RowDefinition Height="auto"></RowDefinition> 
-                <RowDefinition Height="auto"></RowDefinition> 
-                <RowDefinition Height="auto"></RowDefinition> 
-                <RowDefinition Height="auto"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             
             <TextBlock Grid.Row = "0" Grid.Column="0" Text="Amplitude" ></TextBlock>
@@ -61,7 +63,15 @@
             <TextBlock Grid.Row = "7" Grid.Column="0" Text="Frequency" ></TextBlock>
             <TextBox Grid.Row = "7" Grid.Column="1" Name="InputFrequency"></TextBox>
             
-            <Button Grid.Row = "8" Grid.Column="0" Content="Generate" Click="ShowChart"></Button>
+            <TextBlock Grid.Row = "8" Grid.Column="0" Text="Signal" ></TextBlock>
+            <ComboBox Grid.Row = "8" Grid.Column="1" Name="SignalComboBox"></ComboBox>
+            
+            <TextBlock Grid.Row = "9" Grid.Column="0" Text="Histogram Interval" ></TextBlock>
+            <TextBox Grid.Row = "9" Grid.Column="1" Name="HistogramInterval"></TextBox>
+            
+            <Button Grid.Row = "10" Grid.Column="0" Content="Generate" Click="ShowChart"></Button>
+            
+            
             
         </Grid>
         
