@@ -13,7 +13,7 @@ namespace SignalProcessing.Model
         public double StartTime { get; }
         public double Duration { get; }
         public double Period { get; }
-        public bool Discrete { get; }
+        public bool Discrete { get; set; }
         public double Frequency { get; }
         public int SampleAmount { get; set; }
         public List<ObservablePoint> Values { get; }
@@ -32,27 +32,54 @@ namespace SignalProcessing.Model
         {
             if (Discrete)
             {
+                return Values.Sum(e => e.Y) / Values.Count;
             }
-            return Values.Sum(e => e.Y) / Values.Count;
+             
+            double step = 1.0 / Frequency;
+
+            return step * Values.Sum(e => e.Y) / Duration;
         }
 
         public double AbsoluteAverage()
         {
-            return Values.Sum(e => Math.Abs(e.Y)) / Values.Count;
+            if (Discrete)
+            {
+                return Values.Sum(e => Math.Abs(e.Y)) / Values.Count;
+            }
+
+            double step = 1.0 / Frequency;
+
+            return step * Values.Sum(e => Math.Abs(e.Y)) / Duration;
         }
         public double RootMeanSquare()
         {
-            return 0d;
+            return Math.Sqrt(AveragePower());
         }
 
         public double Variation()
         {
-            return 0d;
+            double average = Average();
+
+            if (Discrete)
+            {
+                return Values.Sum(e => (e.Y - average)*(e.Y - average)) / Values.Count;
+            }
+
+            double step = 1.0 / Frequency;
+
+            return step * Values.Sum(e => (e.Y - average) * (e.Y - average)) / Duration;
         }
 
         public double AveragePower()
         {
-            return 0d;
+            if (Discrete)
+            {
+                return Values.Sum(e => e.Y * e.Y) / Values.Count;
+            }
+
+            double step = 1.0 / Frequency;
+
+            return step * Values.Sum(e => e.Y * e.Y) / Duration;
         }
 
         public List<ObservablePoint> GetHistogramPlot(int sectionAmount)

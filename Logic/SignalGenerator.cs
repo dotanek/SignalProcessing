@@ -88,7 +88,7 @@ namespace SignalProcessing.Logic
                 );
             }
 
-            return new Signal(StartTime, Duration, Period, discrete, SampleAmount, values);
+            return new Signal(StartTime, Duration, Period, discrete, Frequency, values);
         }
 
         // Signal generators.

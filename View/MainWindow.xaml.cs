@@ -41,16 +41,19 @@ namespace SignalProcessing
 
             SignalGenerator signalGenerator = new SignalGenerator
             {
-                Period = 1,
-                Frequency = 100
+                Period = Math.PI,
+                Frequency = 100,
+                Duration = 10
             };
-            signalGenerator.JumpTime = 2.5;
-            Signal signal = signalGenerator.Generate(SignalGenerator.Type.GaussianNoice);
+            signalGenerator.JumpTime = 5;
+            Signal signal = signalGenerator.Generate(SignalGenerator.Type.Sinusoidal);
             
             Signal signal2 = signalGenerator.Generate(SignalGenerator.Type.Sinusoidal);
             Signal signal3 = SignalOperations.Add(signal, signal2);
 
-            signal2.Average();
+            double average = signal.Variation();
+            signal.Discrete = true;
+            average = signal.Variation();
 
             Chart.AxisY.Clear();
             Chart.AxisY.Add(
@@ -73,23 +76,23 @@ namespace SignalProcessing
                 }
             );
 
-            /*Chart.Series = new SeriesCollection
+            Chart.Series = new SeriesCollection
             {
                 new LineSeries
                 {
                     Values = new ChartValues<ObservablePoint>(signal.Values),
                     PointGeometry = null,
                 }
-            };*/
+            };
 
-            Chart.Series = new SeriesCollection
+            /*Chart.Series = new SeriesCollection
             {
                 new ColumnSeries
                 {
                     Values = new ChartValues<ObservablePoint>(signal.GetHistogramPlot(15)),
                     PointGeometry = null,
                 }
-            };
+            };*/
         }
     }
 }
