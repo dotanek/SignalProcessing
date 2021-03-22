@@ -41,10 +41,11 @@ namespace SignalProcessing
 
             SignalGenerator signalGenerator = new SignalGenerator
             {
-                Period = 1
+                Period = 1,
+                Frequency = 100
             };
             signalGenerator.JumpTime = 2.5;
-            Signal signal = signalGenerator.Generate(SignalGenerator.Type.Triangular);
+            Signal signal = signalGenerator.Generate(SignalGenerator.Type.GaussianNoice);
             
             Signal signal2 = signalGenerator.Generate(SignalGenerator.Type.Sinusoidal);
             Signal signal3 = SignalOperations.Add(signal, signal2);
@@ -72,23 +73,23 @@ namespace SignalProcessing
                 }
             );
 
-            Chart.Series = new SeriesCollection
+            /*Chart.Series = new SeriesCollection
             {
                 new LineSeries
                 {
-                    Values = new ChartValues<ObservablePoint>(signal3.Values),
+                    Values = new ChartValues<ObservablePoint>(signal.Values),
                     PointGeometry = null,
                 }
-            };
+            };*/
 
-            /*Chart.Series = new SeriesCollection
+            Chart.Series = new SeriesCollection
             {
                 new ColumnSeries
                 {
                     Values = new ChartValues<ObservablePoint>(signal.GetHistogramPlot(15)),
                     PointGeometry = null,
                 }
-            };*/
+            };
         }
     }
 }

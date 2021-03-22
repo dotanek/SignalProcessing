@@ -17,6 +17,7 @@ namespace SignalProcessing.Logic
         public double FillFactor { get; set; }
         public double JumpTime { get; set; } // Used for both Jump and Impulse signals.
         public double Probability { get; set; }
+        public double Frequency { get; set; }
         public int SampleAmount { get; set; }
 
         private Random Random; 
@@ -45,7 +46,7 @@ namespace SignalProcessing.Logic
             FillFactor = 0.5d;
             JumpTime = 5d;
             Probability = 0.5d;
-            SampleAmount = 1000;
+            Frequency = 1;
         }
 
         public delegate double Generator(double time);
@@ -74,7 +75,7 @@ namespace SignalProcessing.Logic
 
             List<ObservablePoint> values = new List<ObservablePoint>();
 
-            double step = Duration / SampleAmount;
+            double step = 1 / Frequency;
 
             for (double t = StartTime; t <= StartTime + Duration; t += step)
             {

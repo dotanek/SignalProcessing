@@ -13,18 +13,19 @@ namespace SignalProcessing.Model
         public double StartTime { get; }
         public double Duration { get; }
         public double Period { get; }
-        public bool Discrete { get;  }
+        public bool Discrete { get; }
+        public double Frequency { get; }
         public int SampleAmount { get; set; }
         public List<ObservablePoint> Values { get; }
 
-        public Signal(double startTime, double duration, double period, bool discrete, int sampleAmount, List<ObservablePoint> values)
+        public Signal(double startTime, double duration, double period, bool discrete, double frequency, List<ObservablePoint> values)
         {
             StartTime = startTime;
             Period = period;
             Duration = duration;
             Values = values;
             Discrete = discrete;
-            SampleAmount = sampleAmount;
+            Frequency = frequency;
         }
 
         public double Average()
