@@ -5,18 +5,75 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SignalProcessing"
         mc:Ignorable="d"
-        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="350" Width="900"
         ResizeMode="NoResize"
-        WindowStyle="None"
+        WindowStyle="ToolWindow"
         xmlns:Controls="clr-namespace:SignalProcessing.View.Controls">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <!--<Controls:NavigationBar Grid.Row="0"></Controls:NavigationBar>-->
-        <lvc:CartesianChart Grid.Row="1" Name="Test" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        
+        <Grid Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20"></RowDefinition> 
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Row = "0" Grid.Column="0" Text="Amplitude" ></TextBlock>
+            <TextBox Grid.Row = "0" Grid.Column="1" Name="InputAmplitude"></TextBox>
+            
+            <TextBlock Grid.Row = "1" Grid.Column="0" Text="StartTime" ></TextBlock>
+            <TextBox Grid.Row = "1" Grid.Column="1" Name="InputStartTime"></TextBox>
+            
+            <TextBlock Grid.Row = "2" Grid.Column="0" Text="Duration" ></TextBlock>
+            <TextBox Grid.Row = "2" Grid.Column="1" Name="InputDuration"></TextBox>
+            
+            <TextBlock Grid.Row = "3" Grid.Column="0" Text="Period" ></TextBlock>
+            <TextBox Grid.Row = "3" Grid.Column="1" Name="InputPeriod"></TextBox>
+            
+            <TextBlock Grid.Row = "4" Grid.Column="0" Text="FillFactor" ></TextBlock>
+            <TextBox Grid.Row = "4" Grid.Column="1" Name="InputFillFactor"></TextBox>
+            
+            <TextBlock Grid.Row = "5" Grid.Column="0" Text="JumpTime" ></TextBlock>
+            <TextBox Grid.Row = "5" Grid.Column="1" Name="InputJumpTime"></TextBox>
+            
+            <TextBlock Grid.Row = "6" Grid.Column="0" Text="Probability" ></TextBlock>
+            <TextBox Grid.Row = "6" Grid.Column="1" Name="InputProbability"></TextBox>
+            
+            <TextBlock Grid.Row = "7" Grid.Column="0" Text="Frequency" ></TextBlock>
+            <TextBox Grid.Row = "7" Grid.Column="1" Name="InputFrequency"></TextBox>
+            
+            <TextBlock Grid.Row = "8" Grid.Column="0" Text="Signal" ></TextBlock>
+            <ComboBox Grid.Row = "8" Grid.Column="1" Name="SignalComboBox"></ComboBox>
+            
+            <TextBlock Grid.Row = "9" Grid.Column="0" Text="Histogram Interval" ></TextBlock>
+            <TextBox Grid.Row = "9" Grid.Column="1" Name="HistogramInterval"></TextBox>
+            
+            <Button Grid.Row = "10" Grid.Column="0" Content="Generate" Click="ShowChart"></Button>
+            
+            
+            
+        </Grid>
+        
     </Grid>
 </Window>
