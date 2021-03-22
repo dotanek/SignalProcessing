@@ -18,6 +18,7 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using SignalProcessing.Model;
 using LiveCharts.Defaults;
+using SignalProcessing.View;
 
 namespace SignalProcessing
 {
@@ -26,7 +27,8 @@ namespace SignalProcessing
     /// </summary>
     public partial class MainWindow : Window
     {
-        public CartesianChart Chart;
+        public CartesianChart SignalChart;
+        public CartesianChart Histogram;
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
@@ -37,7 +39,16 @@ namespace SignalProcessing
         public MainWindow()
         {
             InitializeComponent();
-            Chart = (CartesianChart)FindName("Test");
+            
+        }
+
+        public void ShowChart(object obj, RoutedEventArgs routedEventArgs)
+        {
+
+            
+          
+            SignalChart = (CartesianChart)FindName("SignalChart");
+            Histogram = (CartesianChart)FindName("Histogram");
 
             SignalGenerator signalGenerator = new SignalGenerator
             {
@@ -54,45 +65,9 @@ namespace SignalProcessing
             double average = signal.Variation();
             signal.Discrete = true;
             average = signal.Variation();
-
-            Chart.AxisY.Clear();
-            Chart.AxisY.Add(
-                new Axis
-                {
-                    /*MinValue = 0,*/
-                }
-            );
-
-            double separator = (signal.Values.Max(v => v.Y) - signal.Values.Min(v => v.Y)) / 15;
-
-            Chart.AxisX.Clear();
-            Chart.AxisX.Add(
-                new Axis
-                {
-                    Separator = new LiveCharts.Wpf.Separator
-                    {
-                        Step = separator
-                    },
-                }
-            );
-
-            Chart.Series = new SeriesCollection
-            {
-                new LineSeries
-                {
-                    Values = new ChartValues<ObservablePoint>(signal.Values),
-                    PointGeometry = null,
-                }
-            };
-
-            /*Chart.Series = new SeriesCollection
-            {
-                new ColumnSeries
-                {
-                    Values = new ChartValues<ObservablePoint>(signal.GetHistogramPlot(15)),
-                    PointGeometry = null,
-                }
-            };*/
+            
+            Window chartWindow = new ChartWindow(signal);
+            chartWindow.Show();
         }
     }
 }

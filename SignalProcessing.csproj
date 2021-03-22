@@ -62,6 +62,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Logic\SignalOperations.cs" />
+    <Compile Include="View\ChartWindow.xaml.cs">
+      <DependentUpon>ChartWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Commands\UpdateCurrentViewModelCommand.cs" />
     <Compile Include="View\Controls\NavigationBar.xaml.cs">
       <DependentUpon>NavigationBar.xaml</DependentUpon>
@@ -74,6 +77,7 @@
     <Compile Include="View\Model\OperationsViewModel.cs" />
     <Compile Include="View\State\Navigators\INavigator.cs" />
     <Compile Include="View\State\Navigators\Navigator.cs" />
+    <Page Include="View\ChartWindow.xaml" />
     <Page Include="View\Controls\NavigationBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
