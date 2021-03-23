@@ -6,18 +6,19 @@
         xmlns:local="clr-namespace:SignalProcessing.View"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
-        Title="ChartWindow" Height="500" Width="1600">
+        Title="ChartWindow" Height="500" Width="1800">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="450"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"></ColumnDefinition>
             <ColumnDefinition Width="800"></ColumnDefinition>
             <ColumnDefinition Width="800"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        
-        <lvc:CartesianChart Grid.Column="0"  Name="SignalChart" Margin="30" />
-        <lvc:CartesianChart Grid.Column="1"  Name="Histogram"  Margin="30"/>
+        <TextBox Grid.Column="0" HorizontalAlignment="Left" Margin="10" TextWrapping="Wrap" Text="TextBox" Name="SignalText" VerticalAlignment="Top" Width="200" Height="450"/>
+        <lvc:CartesianChart Grid.Column="1"  Name="SignalChart" Margin="30" />
+        <lvc:CartesianChart Grid.Column="2"  Name="Histogram"  Margin="30"/>
     </Grid>
 </Window>

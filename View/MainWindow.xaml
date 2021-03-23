@@ -12,69 +12,106 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        
-        
+
+
         <Grid Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
-                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"></ColumnDefinition>
-                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Amplitude" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="InputAmplitude" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="StartTime" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="InputStartTime" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Duration" />
+            <TextBox Grid.Row="2" Grid.Column="1" Name="InputDuration" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Period" />
+            <TextBox Grid.Row="3" Grid.Column="1" Name="InputPeriod" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="FillFactor" />
+            <TextBox Grid.Row="4" Grid.Column="1" Name="InputFillFactor" />
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="JumpTime" />
+            <TextBox Grid.Row="5" Grid.Column="1" Name="InputJumpTime" />
+
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Probability" />
+            <TextBox Grid.Row="6" Grid.Column="1" Name="InputProbability" />
+
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Frequency" />
+            <TextBox Grid.Row="7" Grid.Column="1" Name="InputFrequency" />
+
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Signal" />
+            <ComboBox Grid.Row="8" Grid.Column="1" Name="SignalComboBox" />
+
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Histogram Interval" />
+            <TextBox Grid.Row="9" Grid.Column="1" Name="HistogramInterval" />
+
+            <Button Grid.Row="10" Grid.Column="0" Content="Generate" Click="GenerateChart" />
+
+        </Grid>
+
+        <Grid Column="1" Margin="20,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Loaded signal #1"  />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Signal name" Name="SignalName1" />
+            <Button Grid.Row="0" Grid.Column="2" Content="Load" Click="LoadSignal1" />
             
-            <TextBlock Grid.Row = "0" Grid.Column="0" Text="Amplitude" ></TextBlock>
-            <TextBox Grid.Row = "0" Grid.Column="1" Name="InputAmplitude"></TextBox>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Loaded signal #1"  />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="Signal name" Name="SignalName2" />
+            <Button Grid.Row="1" Grid.Column="2" Content="Load" Click="LoadSignal2" />
             
-            <TextBlock Grid.Row = "1" Grid.Column="0" Text="StartTime" ></TextBlock>
-            <TextBox Grid.Row = "1" Grid.Column="1" Name="InputStartTime"></TextBox>
-            
-            <TextBlock Grid.Row = "2" Grid.Column="0" Text="Duration" ></TextBlock>
-            <TextBox Grid.Row = "2" Grid.Column="1" Name="InputDuration"></TextBox>
-            
-            <TextBlock Grid.Row = "3" Grid.Column="0" Text="Period" ></TextBlock>
-            <TextBox Grid.Row = "3" Grid.Column="1" Name="InputPeriod"></TextBox>
-            
-            <TextBlock Grid.Row = "4" Grid.Column="0" Text="FillFactor" ></TextBlock>
-            <TextBox Grid.Row = "4" Grid.Column="1" Name="InputFillFactor"></TextBox>
-            
-            <TextBlock Grid.Row = "5" Grid.Column="0" Text="JumpTime" ></TextBlock>
-            <TextBox Grid.Row = "5" Grid.Column="1" Name="InputJumpTime"></TextBox>
-            
-            <TextBlock Grid.Row = "6" Grid.Column="0" Text="Probability" ></TextBlock>
-            <TextBox Grid.Row = "6" Grid.Column="1" Name="InputProbability"></TextBox>
-            
-            <TextBlock Grid.Row = "7" Grid.Column="0" Text="Frequency" ></TextBlock>
-            <TextBox Grid.Row = "7" Grid.Column="1" Name="InputFrequency"></TextBox>
-            
-            <TextBlock Grid.Row = "8" Grid.Column="0" Text="Signal" ></TextBlock>
-            <ComboBox Grid.Row = "8" Grid.Column="1" Name="SignalComboBox"></ComboBox>
-            
-            <TextBlock Grid.Row = "9" Grid.Column="0" Text="Histogram Interval" ></TextBlock>
-            <TextBox Grid.Row = "9" Grid.Column="1" Name="HistogramInterval"></TextBox>
-            
-            <Button Grid.Row = "10" Grid.Column="0" Content="Generate" Click="ShowChart"></Button>
-            
-            
+            <Grid Grid.Row="2" Grid.ColumnSpan="3" Margin="0,10,0,0">
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                
+                <Button Grid.Row="0" Grid.Column="0" Content="Add" Click="AddSignals" />
+                <Button Grid.Row="0" Grid.Column="1" Content="Subtract" Click="SubtractSignals" />
+                <Button Grid.Row="0" Grid.Column="2" Content="Multiply" Click="MultiplySignals" />
+                <Button Grid.Row="0" Grid.Column="3" Content="Divide" Click="DivideSignals" />
+                
+            </Grid>
             
         </Grid>
-        <TextBox Grid.Column="1" HorizontalAlignment="Left" Height="302" Margin="35,10,-656,-91" TextWrapping="Wrap" Text="TextBox" Name="Test1" VerticalAlignment="Top" Width="622"/>
-
     </Grid>
 </Window>
