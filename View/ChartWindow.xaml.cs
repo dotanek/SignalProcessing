@@ -14,6 +14,8 @@ namespace SignalProcessing.View
 
         public ChartWindow(Signal signal, int sectionAmount = 15)
         {
+            double chartStep = signal.Duration / 20;
+
             InitializeComponent();
             var sb = new StringBuilder();
             sb.Append("Average = ").Append(Math.Round( signal.Average(),6));
@@ -23,23 +25,14 @@ namespace SignalProcessing.View
             sb.Append("\nAveragePower = ").Append(Math.Round(signal.AveragePower(),6));
             sb.Append("\n================\n").Append(signal.ToString());
             SignalText.Text = sb.ToString();
-            SignalChart.AxisY.Clear();
-            SignalChart.AxisY.Add(
-                new Axis
-                {
-                    /*MinValue = 0,*/
-                }
-            );
             
             Histogram.AxisY.Clear();
             Histogram.AxisY.Add(
                 new Axis
                 {
-                    /*MinValue = 0,*/
+                    MinValue = 0
                 }
             );
-
-            double separator = (signal.Values.Max(v => v.Y) - signal.Values.Min(v => v.Y)) / 15;
 
             SignalChart.AxisX.Clear();
             SignalChart.AxisX.Add(
@@ -47,7 +40,22 @@ namespace SignalProcessing.View
                 {
                     Separator = new LiveCharts.Wpf.Separator
                     {
-                        Step = separator
+                        Step = chartStep,
+                        IsEnabled = false
+                    },
+                }
+            );
+
+            double histStep = (signal.Values.Max(v => v.Y) - signal.Values.Min(v => v.Y)) / 5;
+
+            Histogram.AxisX.Clear();
+            Histogram.AxisX.Add(
+                new Axis
+                {
+                    Separator = new LiveCharts.Wpf.Separator
+                    {
+                        Step = Math.Round(histStep, 3),
+                        IsEnabled = false
                     },
                 }
             );
