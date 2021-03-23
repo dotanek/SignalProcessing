@@ -152,5 +152,20 @@ namespace SignalProcessing.Model
             info.AddValue("Frequency", Frequency);
             info.AddValue("Values", Values.Select(v => v.Y).ToList());
         }
+
+        public String ToString()
+        {
+            String str = "";
+            str += "StartTime: " + StartTime + "\n";
+            str += "Period: " + Period + "\n";
+            str += "Frequency: " + Frequency + "\n";
+            str += "Values: \n";
+            for (int i = 0; i < Values.Count; i++)
+            {
+                str += Values.ElementAt(i).Y + "\n";
+            }
+
+            return str;
+        }
     }
 }

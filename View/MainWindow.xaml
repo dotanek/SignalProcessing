@@ -74,6 +74,7 @@
             
             
         </Grid>
-        
+        <TextBox Grid.Column="1" HorizontalAlignment="Left" Height="302" Margin="35,10,-656,-91" TextWrapping="Wrap" Text="TextBox" Name="Test1" VerticalAlignment="Top" Width="622"/>
+
     </Grid>
 </Window>
