@@ -45,7 +45,7 @@ namespace SignalProcessing.Logic
             FillFactor = 0.5d;
             JumpTime = 5d;
             Probability = 0.5d;
-            Frequency = 1;
+            Frequency = 100;
         }
 
         public delegate double Generator(double time);
@@ -99,10 +99,10 @@ namespace SignalProcessing.Logic
 
         private double GaussianNoice(double time) // Inspired by the double dice throw distribution.
         {
-            double multiplier = 2 * Amplitude / 10; 
+            double multiplier = 2 * Amplitude / 5; 
             double random = 0;
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 5; i++)
             {
                 random += Random.NextDouble() * multiplier;
             }
