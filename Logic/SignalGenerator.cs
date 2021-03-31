@@ -45,7 +45,7 @@ namespace SignalProcessing.Logic
             FillFactor = 0.5d;
             JumpTime = 5d;
             Probability = 0.5d;
-            Frequency = 100;
+            Frequency = 10d;
         }
 
         public delegate double Generator(double time);
@@ -74,7 +74,7 @@ namespace SignalProcessing.Logic
 
             List<ObservablePoint> values = new List<ObservablePoint>();
 
-            double step = 1 / Frequency;
+            double step = 1.0 / Frequency;
 
             for (double t = StartTime; t <= StartTime + Duration; t += step)
             {
@@ -99,7 +99,7 @@ namespace SignalProcessing.Logic
 
         private double GaussianNoice(double time) // Inspired by the double dice throw distribution.
         {
-            double multiplier = 2 * Amplitude / 5; 
+            double multiplier = 2.0 * Amplitude / 5.0; 
             double random = 0;
 
             for (int i = 0; i < 5; i++)
@@ -117,7 +117,7 @@ namespace SignalProcessing.Logic
 
         private double OneHalfRectSinusoidal(double time)
         {
-            return Amplitude / 2 * Sinusoidal(time) + Math.Abs(Sinusoidal(time));
+            return Amplitude / 2.0 * (Sinusoidal(time) + Math.Abs(Sinusoidal(time)));
         }
 
         private double TwoHalfRectSinusoidal(double time)
@@ -158,7 +158,7 @@ namespace SignalProcessing.Logic
                 return Amplitude / (FillFactor * Period) * (time - k * Period - StartTime);
             }
 
-            return -Amplitude / (Period * (1 - FillFactor)) * (time - k * Period - StartTime) + Amplitude / (1 - FillFactor);
+            return -Amplitude / (Period * (1.0 - FillFactor)) * (time - k * Period - StartTime) + Amplitude / (1.0 - FillFactor);
         }
 
         private double UnitJump(double time)
@@ -170,7 +170,7 @@ namespace SignalProcessing.Logic
 
             if (time == JumpTime)
             {
-                return Amplitude / 2;
+                return Amplitude / 2.0;
             }
 
             return 0;

@@ -49,23 +49,23 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="Amplitude" />
-                <TextBox Grid.Row="1" Grid.Column="2" Name="InputAmplitude" />
+                <TextBox Grid.Row="1" Grid.Column="2" Name="InputAmplitude" Text="1" />
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="StartTime" />
-                <TextBox Grid.Row="2" Grid.Column="2" Name="InputStartTime" />
+                <TextBox Grid.Row="2" Grid.Column="2" Name="InputStartTime" Text="0"/>
                 <TextBlock Grid.Row="3" Grid.Column="1" Text="Duration" />
-                <TextBox Grid.Row="3" Grid.Column="2" Name="InputDuration" />
+                <TextBox Grid.Row="3" Grid.Column="2" Name="InputDuration" Text="10"/>
                 <TextBlock Grid.Row="4" Grid.Column="1" Text="Period" />
-                <TextBox Grid.Row="4" Grid.Column="2" Name="InputPeriod" />
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="FillFactor" />
-                <TextBox Grid.Row="5" Grid.Column="2" Name="InputFillFactor" />
+                <TextBox Grid.Row="4" Grid.Column="2" Name="InputPeriod" Text="1" />
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="FillFactor"  />
+                <TextBox Grid.Row="5" Grid.Column="2" Name="InputFillFactor" Text="0,5" />
                 <TextBlock Grid.Row="6" Grid.Column="1" Text="JumpTime" />
-                <TextBox Grid.Row="6" Grid.Column="2" Name="InputJumpTime" />
+                <TextBox Grid.Row="6" Grid.Column="2" Name="InputJumpTime" Text="5"/>
                 <TextBlock Grid.Row="7" Grid.Column="1" Text="Probability" />
-                <TextBox Grid.Row="7" Grid.Column="2" Name="InputProbability" />
+                <TextBox Grid.Row="7" Grid.Column="2" Name="InputProbability" Text="0,5" />
                 <TextBlock Grid.Row="8" Grid.Column="1" Text="Frequency" />
-                <TextBox Grid.Row="8" Grid.Column="2" Name="InputFrequency" />
-                <TextBlock Grid.Row="9" Grid.Column="1" Text="Signal" Grid.ColumnSpan="2"/>
-                <ComboBox Grid.Row="10" HorizontalContentAlignment="Center" Grid.Column="1" Name="SignalComboBox" Grid.ColumnSpan="2"/>
+                <TextBox Grid.Row="8" Grid.Column="2" Name="InputFrequency" Text="10" />
+                <TextBlock Grid.Row="9" Grid.Column="1" Text="Signal type" Grid.ColumnSpan="2"/>
+                <ComboBox Grid.Row="10" HorizontalContentAlignment="Center" Grid.Column="1" Name="SignalComboBox" Grid.ColumnSpan="2" SelectedIndex="2"/>
                 <Button Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Content="Generate" Click="GenerateChart" />
                 <Button Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="2" Content="Show" Name="ShowGenerated" Click="ShowGeneratedSignal"/>
 
