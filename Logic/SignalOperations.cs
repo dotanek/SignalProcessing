@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SignalProcessing.Logic
 {
@@ -17,12 +18,12 @@ namespace SignalProcessing.Logic
                 throw new Exception("Incompatible signals.");
             }
 
-            List<ObservablePoint> values = new List<ObservablePoint>();
+            List<Point> values = new List<Point>();
 
             for (int i = 0; i < s1.Values.Count; i++)
             {
                 values.Add(
-                    new ObservablePoint
+                    new Point
                     {
                         X = s1.Values[i].X,
                         Y = s1.Values[i].Y + s2.Values[i].Y
@@ -40,12 +41,12 @@ namespace SignalProcessing.Logic
                 throw new Exception("Incompatible signals.");
             }
 
-            List<ObservablePoint> values = new List<ObservablePoint>();
+            List<Point> values = new List<Point>();
 
             for (int i = 0; i < s1.Values.Count; i++)
             {
                 values.Add(
-                    new ObservablePoint
+                    new Point
                     {
                         X = s1.Values[i].X,
                         Y = s1.Values[i].Y - s2.Values[i].Y
@@ -63,12 +64,12 @@ namespace SignalProcessing.Logic
                 throw new Exception("Incompatible signals.");
             }
 
-            List<ObservablePoint> values = new List<ObservablePoint>();
+            List<Point> values = new List<Point>();
 
             for (int i = 0; i < s1.Values.Count; i++)
             {
                 values.Add(
-                    new ObservablePoint
+                    new Point
                     {
                         X = s1.Values[i].X,
                         Y = s1.Values[i].Y * s2.Values[i].Y
@@ -86,12 +87,12 @@ namespace SignalProcessing.Logic
                 throw new Exception("Incompatible signals.");
             }
 
-            List<ObservablePoint> values = new List<ObservablePoint>();
+            List<Point> values = new List<Point>();
 
             for (int i = 0; i < s1.Values.Count; i++)
             {
                 values.Add(
-                    new ObservablePoint
+                    new Point
                     {
                         X = s1.Values[i].X,
                         Y = s2.Values[i].Y != 0 ? s1.Values[i].Y / s2.Values[i].Y : s1.Values[i].Y

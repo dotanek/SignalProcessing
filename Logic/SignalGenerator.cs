@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SignalProcessing.Logic
 {
@@ -72,14 +73,14 @@ namespace SignalProcessing.Logic
                 default: throw new Exception("Unknown signal type.");
             }
 
-            List<ObservablePoint> values = new List<ObservablePoint>();
+            List<Point> values = new List<Point>();
 
             double step = 1.0 / Frequency;
 
             for (double t = StartTime; t <= StartTime + Duration; t += step)
             {
                 values.Add(
-                    new ObservablePoint
+                    new Point
                     {
                         X = t,
                         Y = generator(t)

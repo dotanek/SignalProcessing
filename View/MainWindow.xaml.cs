@@ -29,6 +29,7 @@ namespace SignalProcessing
     /// </summary>
     public partial class MainWindow : Window
     {
+        public SeriesCollection seriesCollection { get; set; }
         private Signal _generatedSignal;
         private Signal _loadedSignal1;
         private Signal _loadedSignal2;
@@ -55,10 +56,16 @@ namespace SignalProcessing
                 LabelFormatter = (x) => string.Format("{0000:0000}", x),
             });
             SignalComboBox.ItemsSource = Enum.GetValues(typeof(SignalGenerator.Type)).Cast<SignalGenerator.Type>();
+
+            seriesCollection = new SeriesCollection();
+            seriesCollection.Add(new LineSeries{PointGeometry = null});
+            SignalChart.Series = seriesCollection;
         }
 
         public void GenerateChart(object obj, RoutedEventArgs routedEventArgs)
         {
+            StreamWriter log = new StreamWriter("log.txt", append: true);
+            var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             ReadyText.Text = "Generating...";
             SignalGenerator signalGenerator = new SignalGenerator();
             double temporaryInputValue;
@@ -99,7 +106,9 @@ namespace SignalProcessing
             ShowGenerated.IsEnabled = true;
             SaveSignalToFile(_generatedSignal,"generated");
             ReadyText.Text = "Ready";
-
+            var stop = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            log.WriteLineAsync("generate "+(stop - start));
+            log.Close();
             //Window chartWindow = new ChartWindow(signal, sectionAmount);
             //chartWindow.Show();
         }
@@ -110,22 +119,17 @@ namespace SignalProcessing
         }
         public void ShowCharts(Signal signal)
         {
-            SignalChart.Series.Clear();
-            SignalChart.Series = new SeriesCollection
-            {
-               new LineSeries
-               {
-                   Values = new ChartValues<ObservablePoint>(signal.Values),
-                   PointGeometry = null,
-               },
-            };
-
+            StreamWriter log = new StreamWriter("log.txt", append: true);
+            var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            
+            seriesCollection[0].Values = new ChartValues<double>(signal.Values.Select(x => x.Y));
+            
             int histogramSections = int.TryParse(HistogramSections.Text, out histogramSections) ? int.Parse(HistogramSections.Text) : 10;
 
             List<ObservablePoint> histogramPlot = signal.GetHistogramPlot(histogramSections);
             List<double> Y = histogramPlot.Select(e => e.Y).ToList();
             List<string> X = histogramPlot.Select(e => string.Format("{0:0.00}", e.X)).ToList();
-
+            
             HistogramChart.AxisX.Clear();
             HistogramChart.AxisX.Add(
                 new Axis
@@ -147,7 +151,7 @@ namespace SignalProcessing
                    PointGeometry = null
                }
             };
-
+            
             SignalTextValues.Text = signal.ToString();
 
             var sb = new StringBuilder();
@@ -158,6 +162,9 @@ namespace SignalProcessing
             sb.Append("\nAveragePower = ").Append(Math.Round(signal.AveragePower(), 6));
 
             SignalTextAverages.Text = sb.ToString();
+            var stop = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            log.WriteLineAsync("show "+(stop - start));
+            log.Close();
         }
 
         public void SaveSignalToFile(Signal signal, String prefix)

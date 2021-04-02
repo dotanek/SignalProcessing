@@ -146,7 +146,8 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <lvc:CartesianChart Grid.Row="0" Margin="5,5,5,5" Name="SignalChart" />
+                <lvc:CartesianChart Grid.Row="0" Margin="5,5,5,5" Name="SignalChart" Series="{Binding SeriesCollection}"/>
+                    
                 <lvc:CartesianChart Grid.Row="1" Margin="5,5,5,5" Name="HistogramChart"/>
             </Grid>
             <Grid Grid.Column="1">

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows;
 
 namespace SignalProcessing.Model
 {
@@ -18,9 +19,9 @@ namespace SignalProcessing.Model
         public double Period { get; }
         public bool Discrete { get; set; }
         public double Frequency { get; }
-        public List<ObservablePoint> Values { get; }
+        public List<Point> Values { get; }
 
-        public Signal(double startTime, double duration, double period, bool discrete, double frequency, List<ObservablePoint> values)
+        public Signal(double startTime, double duration, double period, bool discrete, double frequency, List<Point> values)
         {
             StartTime = startTime;
             Period = period;
@@ -103,7 +104,7 @@ namespace SignalProcessing.Model
                 );
             }
 
-            foreach (ObservablePoint value in Values)
+            foreach (Point value in Values)
             {
                 ObservablePoint valueFrequency = valueFrequencies.FirstOrDefault(vf => value.Y <= vf.X + sectionRange);
                 if (valueFrequency != null)
@@ -112,10 +113,10 @@ namespace SignalProcessing.Model
                 }
             }
 
-            foreach (ObservablePoint valueFrequency in valueFrequencies) // Moving label to the middle of the section.
-            {
-                valueFrequency.X += sectionRange / 2;
-            }
+            //foreach (Point valueFrequency in valueFrequencies) // Moving label to the middle of the section.
+            //{
+            //    valueFrequency.X += sectionRange / 2;
+            //}
 
             return valueFrequencies;
         }
@@ -128,12 +129,12 @@ namespace SignalProcessing.Model
             Frequency = (double)info.GetValue("Frequency", typeof(double));
 
             List<double> values = (List<double>)info.GetValue("Values", typeof(List<double>));
-            Values = new List<ObservablePoint>();
+            Values = new List<Point>();
             double step = 1.0 / Frequency;
             for (int i = 0; i < values.Count; i++)
             {
                 Values.Add(
-                    new ObservablePoint
+                    new Point
                     {
                         X = StartTime + i * step,
                         Y = values.ElementAt(i)
@@ -153,6 +154,7 @@ namespace SignalProcessing.Model
             info.AddValue("Values", Values.Select(v => v.Y).ToList());
         }
 
+        override 
         public String ToString()
         {
             String str = "";
@@ -160,12 +162,18 @@ namespace SignalProcessing.Model
             str += "Period: " + Period + "\n";
             str += "Frequency: " + Frequency + "\n";
             str += "Values: \n";
-            for (int i = 0; i < Values.Count; i++)
+            var sb = new StringBuilder();
+            sb.Append(str);
+            foreach (var point in Values)
             {
-                str += Values.ElementAt(i).Y + "\n";
+                sb.AppendLine(Math.Round(point.Y, 4).ToString());
             }
+            //for (int i = 0; i < Values.Count; i++)
+            //{
+            //    str += Values.ElementAt(i).Y + "\n";
+            //}
 
-            return str;
+            return sb.ToString();
         }
     }
 }

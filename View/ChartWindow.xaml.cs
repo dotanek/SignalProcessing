@@ -64,7 +64,7 @@ namespace SignalProcessing.View
             {
                 new LineSeries
                 {
-                    Values = new ChartValues<ObservablePoint>(signal.Values),
+                    Values = new ChartValues<Point>(signal.Values),
                     PointGeometry = null,
                 }
             };
