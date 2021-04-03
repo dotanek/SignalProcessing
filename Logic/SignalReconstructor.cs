@@ -33,7 +33,7 @@ namespace SignalProcessing.Logic
             List<Point> reconstructedValues = new List<Point>();
             double step = 1.0 / source.Frequency / 4.0;
 
-            for (double t = source.Values.First().X; t <= source.Values.Last().X; t += step)
+            for (double t = source.Values.First().X; reconstructedValues.Count < source.Values.Count*4; t += step)
             {
                 var sum = 0.0;
                 for (int j = 0; j < source.Values.Count; j++)

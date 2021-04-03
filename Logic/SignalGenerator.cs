@@ -77,7 +77,7 @@ namespace SignalProcessing.Logic
 
             double step = 1.0 / Frequency;
 
-            for (double t = StartTime; t <= StartTime + Duration; t += step)
+            for (double t = StartTime; t < StartTime + Duration; t += step)
             {
                 values.Add(
                     new Point

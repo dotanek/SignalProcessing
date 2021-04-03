@@ -126,15 +126,16 @@ namespace SignalProcessing
             _reconstructedSignal = ReconstructorComboBox.SelectedIndex == 0
                 ? signalReconstructor.ZeroOrderHold(quantised)
                 : signalReconstructor.SincInterpolation(quantised);
-
+            var sizeDifference = generatedCompareSignal.Values.Count - _reconstructedSignal.Values.Count;
+            generatedCompareSignal.Values.RemoveRange(generatedCompareSignal.Values.Count - sizeDifference, sizeDifference);
             SignalTextAverages.Text = "";
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("====================");
             sb.AppendLine("Quantisation-Source");
-            sb.AppendLine("MSE: " + Math.Round(SimilarityMetric.ComputeMSE(_generatedSignal, quantised), 6));
-            sb.AppendLine("SNR: " + Math.Round(SimilarityMetric.ComputeSNR(_generatedSignal, quantised), 6));
-            sb.AppendLine("PSNR: " + Math.Round(SimilarityMetric.ComputePSNR(_generatedSignal, quantised), 6));
-            sb.AppendLine("MD: " + Math.Round(SimilarityMetric.ComputeMD(_generatedSignal, quantised), 6));
+           // sb.AppendLine("MSE: " + Math.Round(SimilarityMetric.ComputeMSE(_generatedSignal, quantised), 6));
+           // sb.AppendLine("SNR: " + Math.Round(SimilarityMetric.ComputeSNR(_generatedSignal, quantised), 6));
+           // sb.AppendLine("PSNR: " + Math.Round(SimilarityMetric.ComputePSNR(_generatedSignal, quantised), 6));
+           // sb.AppendLine("MD: " + Math.Round(SimilarityMetric.ComputeMD(_generatedSignal, quantised), 6));
             sb.AppendLine("====================");
             sb.AppendLine("Reconstruction-Source");
             sb.AppendLine("MSE: " +
