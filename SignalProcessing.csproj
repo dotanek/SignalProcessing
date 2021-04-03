@@ -62,6 +62,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Logic\SignalOperations.cs" />
+    <Compile Include="Logic\SignalQuantisation.cs" />
+    <Compile Include="Logic\SignalReconstructor.cs" />
+    <Compile Include="Logic\SimilarityMetric.cs" />
     <Compile Include="View\ChartWindow.xaml.cs">
       <DependentUpon>ChartWindow.xaml</DependentUpon>
     </Compile>

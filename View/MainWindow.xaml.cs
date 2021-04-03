@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
 using LiveCharts;
 using LiveCharts.Wpf;
 using SignalProcessing.Model;
@@ -31,6 +30,7 @@ namespace SignalProcessing
     {
         public SeriesCollection seriesCollection { get; set; }
         private Signal _generatedSignal;
+        private Signal _reconstructedSignal;
         private Signal _loadedSignal1;
         private Signal _loadedSignal2;
         private Signal _resultSignal;
@@ -56,16 +56,20 @@ namespace SignalProcessing
                 LabelFormatter = (x) => string.Format("{0000:0000}", x),
             });
             SignalComboBox.ItemsSource = Enum.GetValues(typeof(SignalGenerator.Type)).Cast<SignalGenerator.Type>();
+            ReconstructorComboBox.Items.Add("Zero Order Hold");
+            ReconstructorComboBox.Items.Add("Sinc Interpolation");
 
             seriesCollection = new SeriesCollection();
-            seriesCollection.Add(new LineSeries{PointGeometry = null});
+            seriesCollection.Add(new LineSeries
+                {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Blue});
+            seriesCollection.Add(new LineSeries
+                {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Brown});
+
             SignalChart.Series = seriesCollection;
         }
 
         public void GenerateChart(object obj, RoutedEventArgs routedEventArgs)
         {
-            StreamWriter log = new StreamWriter("log.txt", append: true);
-            var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             ReadyText.Text = "Generating...";
             SignalGenerator signalGenerator = new SignalGenerator();
             double temporaryInputValue;
@@ -73,63 +77,103 @@ namespace SignalProcessing
             {
                 signalGenerator.Amplitude = double.Parse(InputAmplitude.Text);
             }
+
             if (double.TryParse(InputStartTime.Text, out temporaryInputValue))
             {
                 signalGenerator.StartTime = double.Parse(InputStartTime.Text);
             }
+
             if (double.TryParse(InputDuration.Text, out temporaryInputValue))
             {
                 signalGenerator.Duration = double.Parse(InputDuration.Text);
             }
+
             if (double.TryParse(InputPeriod.Text, out temporaryInputValue))
             {
                 signalGenerator.Period = double.Parse(InputPeriod.Text);
             }
+
             if (double.TryParse(InputFillFactor.Text, out temporaryInputValue))
             {
                 signalGenerator.FillFactor = double.Parse(InputFillFactor.Text);
             }
+
             if (double.TryParse(InputJumpTime.Text, out temporaryInputValue))
             {
                 signalGenerator.JumpTime = double.Parse(InputJumpTime.Text);
             }
+
             if (double.TryParse(InputProbability.Text, out temporaryInputValue))
             {
                 signalGenerator.Probability = double.Parse(InputProbability.Text);
             }
+
             if (double.TryParse(InputFrequency.Text, out temporaryInputValue))
             {
                 signalGenerator.Frequency = double.Parse(InputFrequency.Text);
             }
 
-            _generatedSignal = signalGenerator.Generate((SignalGenerator.Type)SignalComboBox.SelectionBoxItem);
+            _generatedSignal = signalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem);
+            signalGenerator.Frequency *= 4;
+            var generatedCompareSignal =
+                signalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem);
+            int quantisationBits = int.TryParse(QuantizationBits.Text, out quantisationBits)
+                ? int.Parse(QuantizationBits.Text)
+                : 8;
+            var quantisation = new SignalQuantisation(quantisationBits);
+            var quantised = quantisation.Quantise(_generatedSignal);
+            var signalReconstructor = new SignalReconstructor();
+            _reconstructedSignal = ReconstructorComboBox.SelectedIndex == 0
+                ? signalReconstructor.ZeroOrderHold(quantised)
+                : signalReconstructor.SincInterpolation(quantised);
+
+            SignalTextAverages.Text = "";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("====================");
+            sb.AppendLine("Quantisation-Source");
+            sb.AppendLine("MSE: " + Math.Round(SimilarityMetric.ComputeMSE(_generatedSignal, quantised), 6));
+            sb.AppendLine("SNR: " + Math.Round(SimilarityMetric.ComputeSNR(_generatedSignal, quantised), 6));
+            sb.AppendLine("PSNR: " + Math.Round(SimilarityMetric.ComputePSNR(_generatedSignal, quantised), 6));
+            sb.AppendLine("MD: " + Math.Round(SimilarityMetric.ComputeMD(_generatedSignal, quantised), 6));
+            sb.AppendLine("====================");
+            sb.AppendLine("Reconstruction-Source");
+            sb.AppendLine("MSE: " +
+                          Math.Round(SimilarityMetric.ComputeMSE(generatedCompareSignal, _reconstructedSignal), 6));
+            sb.AppendLine("SNR: " +
+                          Math.Round(SimilarityMetric.ComputeSNR(generatedCompareSignal, _reconstructedSignal), 6));
+            sb.AppendLine("PSNR: " +
+                          Math.Round(SimilarityMetric.ComputePSNR(generatedCompareSignal, _reconstructedSignal), 6));
+            sb.AppendLine("MD: " +
+                          Math.Round(SimilarityMetric.ComputeMD(generatedCompareSignal, _reconstructedSignal), 6));
+            sb.AppendLine("ENOB: " +
+                          Math.Round(SimilarityMetric.ComputeENOB(generatedCompareSignal, _reconstructedSignal), 6));
+            sb.AppendLine("====================");
+            SignalTextAverages.Text += sb.ToString();
+
             ShowGenerated.IsEnabled = true;
-            SaveSignalToFile(_generatedSignal,"generated");
+            SaveSignalToFile(_generatedSignal, "generated");
             ReadyText.Text = "Ready";
-            var stop = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            log.WriteLineAsync("generate "+(stop - start));
-            log.Close();
-            //Window chartWindow = new ChartWindow(signal, sectionAmount);
-            //chartWindow.Show();
         }
 
         public void ShowGeneratedSignal(object obj, RoutedEventArgs routedEventArgs)
         {
             ShowCharts(_generatedSignal);
+            ShowReconstructionChart(_reconstructedSignal);
         }
+
         public void ShowCharts(Signal signal)
         {
-            StreamWriter log = new StreamWriter("log.txt", append: true);
-            var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            
-            seriesCollection[0].Values = new ChartValues<double>(signal.Values.Select(x => x.Y));
-            
-            int histogramSections = int.TryParse(HistogramSections.Text, out histogramSections) ? int.Parse(HistogramSections.Text) : 10;
+            seriesCollection[0].Values = new ChartValues<ObservablePoint>();
+            signal.Values.ForEach(e => seriesCollection[0].Values.Add(new ObservablePoint(e.X, e.Y)));
+
+            int histogramSections = int.TryParse(HistogramSections.Text, out histogramSections)
+                ? int.Parse(HistogramSections.Text)
+                : 10;
 
             List<ObservablePoint> histogramPlot = signal.GetHistogramPlot(histogramSections);
             List<double> Y = histogramPlot.Select(e => e.Y).ToList();
             List<string> X = histogramPlot.Select(e => string.Format("{0:0.00}", e.X)).ToList();
-            
+
             HistogramChart.AxisX.Clear();
             HistogramChart.AxisX.Add(
                 new Axis
@@ -145,13 +189,13 @@ namespace SignalProcessing
             HistogramChart.Series.Clear();
             HistogramChart.Series = new SeriesCollection
             {
-               new ColumnSeries
-               {
-                   Values = new ChartValues<double>(Y),
-                   PointGeometry = null
-               }
+                new ColumnSeries
+                {
+                    Values = new ChartValues<double>(Y),
+                    PointGeometry = null
+                }
             };
-            
+
             SignalTextValues.Text = signal.ToString();
 
             var sb = new StringBuilder();
@@ -161,19 +205,25 @@ namespace SignalProcessing
             sb.Append("\nVariation = ").Append(Math.Round(signal.Variation(), 6));
             sb.Append("\nAveragePower = ").Append(Math.Round(signal.AveragePower(), 6));
 
-            SignalTextAverages.Text = sb.ToString();
-            var stop = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            log.WriteLineAsync("show "+(stop - start));
-            log.Close();
+            SignalTextAverages.Text += sb.ToString();
+        }
+
+        public void ShowReconstructionChart(Signal signal)
+        {
+            seriesCollection[1].Values = new ChartValues<ObservablePoint>();
+            signal.Values.ForEach(e => seriesCollection[1].Values.Add(new ObservablePoint(e.X, e.Y)));
         }
 
         public void SaveSignalToFile(Signal signal, String prefix)
         {
-            Stream stream = File.Open("signals/"+prefix+"_signal_@"+DateTime.Now.ToString("T").Replace(':','-')+".sig", FileMode.Create);
+            Stream stream =
+                File.Open("signals/" + prefix + "_signal_@" + DateTime.Now.ToString("T").Replace(':', '-') + ".sig",
+                    FileMode.Create);
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(stream, signal);
             stream.Close();
         }
+
         public void LoadSignal1(object obj, RoutedEventArgs routedEventArgs)
         {
             var (signalFromFile, fileName) = LoadSignalFromFile();
@@ -181,6 +231,7 @@ namespace SignalProcessing
             _loadedSignal1 = signalFromFile;
             SignalName1.Text = fileName;
         }
+
         public void ShowSignal1(object obj, RoutedEventArgs routedEventArgs)
         {
             ShowCharts(_loadedSignal1);
@@ -208,7 +259,7 @@ namespace SignalProcessing
             var filename = dlg.FileName;
             var binaryFormatter = new BinaryFormatter();
             Stream stream = File.Open(filename, FileMode.Open);
-            var signal = (Signal)binaryFormatter.Deserialize(stream);
+            var signal = (Signal) binaryFormatter.Deserialize(stream);
             //Window chartWindow = new ChartWindow(signal, int.TryParse(HistogramInterval.Text, out _) ? int.Parse(HistogramInterval.Text) : 15);
             //chartWindow.Show();
             ReadyText.Text = "Ready";
@@ -230,7 +281,7 @@ namespace SignalProcessing
             SaveSignalToFile(_resultSignal, "ADD");
             ReadyText.Text = "Ready";
         }
-        
+
         public void SubtractSignals(object obj, RoutedEventArgs routedEventArgs)
         {
             ReadyText.Text = "Subtracting...";
@@ -241,7 +292,7 @@ namespace SignalProcessing
             SaveSignalToFile(_resultSignal, "SUBTRACT");
             ReadyText.Text = "Ready";
         }
-        
+
         public void MultiplySignals(object obj, RoutedEventArgs routedEventArgs)
         {
             ReadyText.Text = "Multiplying...";
@@ -252,7 +303,7 @@ namespace SignalProcessing
             SaveSignalToFile(_resultSignal, "MULTIPLY");
             ReadyText.Text = "Ready";
         }
-        
+
         public void DivideSignals(object obj, RoutedEventArgs routedEventArgs)
         {
             if (_loadedSignal1 == null && _loadedSignal2 == null) return;
@@ -264,4 +315,4 @@ namespace SignalProcessing
             ReadyText.Text = "Ready";
         }
     }
-}    
+}

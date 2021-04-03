@@ -19,7 +19,7 @@ namespace SignalProcessing.Model
         public double Period { get; }
         public bool Discrete { get; set; }
         public double Frequency { get; }
-        public List<Point> Values { get; }
+        public List<Point> Values { get; set; }
 
         public Signal(double startTime, double duration, double period, bool discrete, double frequency, List<Point> values)
         {
@@ -113,10 +113,10 @@ namespace SignalProcessing.Model
                 }
             }
 
-            //foreach (Point valueFrequency in valueFrequencies) // Moving label to the middle of the section.
-            //{
-            //    valueFrequency.X += sectionRange / 2;
-            //}
+            foreach (ObservablePoint valueFrequency in valueFrequencies) // Moving label to the middle of the section.
+            {
+                valueFrequency.X += sectionRange / 2;
+            }
 
             return valueFrequencies;
         }
@@ -149,7 +149,7 @@ namespace SignalProcessing.Model
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("StartTime", StartTime);
-            info.AddValue("Period", StartTime);
+            info.AddValue("Period", Period);
             info.AddValue("Frequency", Frequency);
             info.AddValue("Values", Values.Select(v => v.Y).ToList());
         }
