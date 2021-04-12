@@ -127,7 +127,16 @@ namespace SignalProcessing
                 ? signalReconstructor.ZeroOrderHold(quantised)
                 : signalReconstructor.SincInterpolation(quantised);
             var sizeDifference = generatedCompareSignal.Values.Count - _reconstructedSignal.Values.Count;
-            generatedCompareSignal.Values.RemoveRange(generatedCompareSignal.Values.Count - sizeDifference, sizeDifference);
+            if (sizeDifference > 0)
+            {
+                generatedCompareSignal.Values.RemoveRange(generatedCompareSignal.Values.Count - sizeDifference, sizeDifference);
+            }
+            else
+            {
+                sizeDifference = Math.Abs(sizeDifference);
+                _reconstructedSignal.Values.RemoveRange(_reconstructedSignal.Values.Count - sizeDifference, sizeDifference);
+            }
+           
             SignalTextAverages.Text = "";
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("====================");

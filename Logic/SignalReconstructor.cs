@@ -17,9 +17,14 @@ namespace SignalProcessing.Logic
             double step = 1.0 / source.Frequency / 4.0;
             for (int i = 0; i < source.Values.Count - 1; i++)
             {
-                for (double j = source.Values[i].X; j < source.Values[i + 1].X; j += step)
+               // for (double j = source.Values[i].X; j < source.Values[i + 1].X; j += step)
+               // {
+               //     reconstructedValues.Add(new Point(j, source.Values[i].Y));
+               // }
+               
+                for (double j = 0; j < 4; j ++)
                 {
-                    reconstructedValues.Add(new Point(j, source.Values[i].Y));
+                    reconstructedValues.Add(new Point(source.Values[i].X + j * step, source.Values[i].Y));
                 }
             }
 
