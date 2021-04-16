@@ -199,5 +199,17 @@ namespace SignalProcessing.Logic
 
             return 0;
         }
+
+        public SignalGenerator(SignalGenerator signalGenerator)
+        {
+            Amplitude = signalGenerator.Amplitude;
+            StartTime = signalGenerator.StartTime;
+            Duration = signalGenerator.Duration;
+            Period = signalGenerator.Period;
+            FillFactor = signalGenerator.FillFactor;
+            JumpTime = signalGenerator.JumpTime;
+            Probability = signalGenerator.Probability;
+            Frequency = signalGenerator.Frequency;
+        }
     }
 }

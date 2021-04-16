@@ -31,6 +31,7 @@ namespace SignalProcessing
         public SeriesCollection seriesCollection { get; set; }
         private Signal _generatedSignal;
         private Signal _reconstructedSignal;
+        private Signal _groundTruthSignal;
         private Signal _loadedSignal1;
         private Signal _loadedSignal2;
         private Signal _resultSignal;
@@ -60,11 +61,13 @@ namespace SignalProcessing
             ReconstructorComboBox.Items.Add("Sinc Interpolation");
 
             seriesCollection = new SeriesCollection();
-            seriesCollection.Add(new LineSeries
-                {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Blue});
+            seriesCollection.Add(new ScatterSeries()
+                //  {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Blue});
+                {Fill = Brushes.Blue, Stroke = Brushes.Blue});
             seriesCollection.Add(new LineSeries
                 {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Brown});
-
+            seriesCollection.Add(new LineSeries
+                {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Gray});
             SignalChart.Series = seriesCollection;
         }
 
@@ -72,7 +75,9 @@ namespace SignalProcessing
         {
             ReadyText.Text = "Generating...";
             SignalGenerator signalGenerator = new SignalGenerator();
+            SignalGenerator secondarySignalGenerator = null;
             double temporaryInputValue;
+            double secondarySignalPeriod = 0.0;
             if (double.TryParse(InputAmplitude.Text, out temporaryInputValue))
             {
                 signalGenerator.Amplitude = double.Parse(InputAmplitude.Text);
@@ -91,6 +96,21 @@ namespace SignalProcessing
             if (double.TryParse(InputPeriod.Text, out temporaryInputValue))
             {
                 signalGenerator.Period = double.Parse(InputPeriod.Text);
+            }
+            else if (InputPeriod.Text.Contains("/"))
+            {
+                var freqParams = InputPeriod.Text.Split('/');
+                signalGenerator.Period = double.Parse(freqParams[0]) / double.Parse(freqParams[1]);
+            }
+
+            if (double.TryParse(InputSecondaryPeriod.Text, out temporaryInputValue))
+            {
+                secondarySignalPeriod = double.Parse(InputSecondaryPeriod.Text);
+            }
+            else if (InputSecondaryPeriod.Text.Contains("/"))
+            {
+                var freqParams = InputSecondaryPeriod.Text.Split('/');
+                secondarySignalPeriod = double.Parse(freqParams[0]) / double.Parse(freqParams[1]);
             }
 
             if (double.TryParse(InputFillFactor.Text, out temporaryInputValue))
@@ -113,10 +133,29 @@ namespace SignalProcessing
                 signalGenerator.Frequency = double.Parse(InputFrequency.Text);
             }
 
+
             _generatedSignal = signalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem);
+            var keepFrequency = signalGenerator.Frequency;
             signalGenerator.Frequency *= 4;
             var generatedCompareSignal =
                 signalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem);
+            _groundTruthSignal = generatedCompareSignal;
+            //signalGenerator.Frequency = 100;
+            //_groundTruthSignal = signalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem);
+            signalGenerator.Frequency = keepFrequency;
+            if (secondarySignalPeriod != 0.0)
+            {
+                secondarySignalGenerator = new SignalGenerator(signalGenerator) {Period = secondarySignalPeriod};
+                _generatedSignal = SignalOperations.Add(_generatedSignal,
+                    secondarySignalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem));
+                
+                secondarySignalGenerator.Frequency *= 4;
+                generatedCompareSignal = SignalOperations.Add(generatedCompareSignal, secondarySignalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem));
+                _groundTruthSignal = generatedCompareSignal;
+                // secondarySignalGenerator.Frequency = 100;
+                // _groundTruthSignal = SignalOperations.Add(_groundTruthSignal, secondarySignalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem));
+
+            }
             int quantisationBits = int.TryParse(QuantizationBits.Text, out quantisationBits)
                 ? int.Parse(QuantizationBits.Text)
                 : 8;
@@ -129,14 +168,16 @@ namespace SignalProcessing
             var sizeDifference = generatedCompareSignal.Values.Count - _reconstructedSignal.Values.Count;
             if (sizeDifference > 0)
             {
-                generatedCompareSignal.Values.RemoveRange(generatedCompareSignal.Values.Count - sizeDifference, sizeDifference);
+                generatedCompareSignal.Values.RemoveRange(generatedCompareSignal.Values.Count - sizeDifference,
+                    sizeDifference);
             }
             else
             {
                 sizeDifference = Math.Abs(sizeDifference);
-                _reconstructedSignal.Values.RemoveRange(_reconstructedSignal.Values.Count - sizeDifference, sizeDifference);
+                _reconstructedSignal.Values.RemoveRange(_reconstructedSignal.Values.Count - sizeDifference,
+                    sizeDifference);
             }
-           
+
             SignalTextAverages.Text = "";
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("====================");
@@ -169,6 +210,7 @@ namespace SignalProcessing
         {
             ShowCharts(_generatedSignal);
             ShowReconstructionChart(_reconstructedSignal);
+            ShowGroundTruthSignal(_groundTruthSignal);
         }
 
         public void ShowCharts(Signal signal)
@@ -222,6 +264,12 @@ namespace SignalProcessing
         {
             seriesCollection[1].Values = new ChartValues<ObservablePoint>();
             signal.Values.ForEach(e => seriesCollection[1].Values.Add(new ObservablePoint(e.X, e.Y)));
+        }
+
+        public void ShowGroundTruthSignal(Signal signal)
+        {
+            seriesCollection[2].Values = new ChartValues<ObservablePoint>();
+            seriesCollection[2].Values.AddRange(signal.Values.Select(e => new ObservablePoint(e.X, e.Y)).ToList());
         }
 
         public void SaveSignalToFile(Signal signal, String prefix)
