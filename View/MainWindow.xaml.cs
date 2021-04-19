@@ -140,8 +140,6 @@ namespace SignalProcessing
             var generatedCompareSignal =
                 signalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem);
             _groundTruthSignal = generatedCompareSignal;
-            //signalGenerator.Frequency = 100;
-            //_groundTruthSignal = signalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem);
             signalGenerator.Frequency = keepFrequency;
             if (secondarySignalPeriod != 0.0)
             {
@@ -152,8 +150,6 @@ namespace SignalProcessing
                 secondarySignalGenerator.Frequency *= 4;
                 generatedCompareSignal = SignalOperations.Add(generatedCompareSignal, secondarySignalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem));
                 _groundTruthSignal = generatedCompareSignal;
-                // secondarySignalGenerator.Frequency = 100;
-                // _groundTruthSignal = SignalOperations.Add(_groundTruthSignal, secondarySignalGenerator.Generate((SignalGenerator.Type) SignalComboBox.SelectionBoxItem));
 
             }
             int quantisationBits = int.TryParse(QuantizationBits.Text, out quantisationBits)
@@ -164,7 +160,8 @@ namespace SignalProcessing
             var signalReconstructor = new SignalReconstructor();
             _reconstructedSignal = ReconstructorComboBox.SelectedIndex == 0
                 ? signalReconstructor.ZeroOrderHold(quantised)
-                : signalReconstructor.SincInterpolation(quantised);
+                : signalReconstructor.SincInterpolation(quantised, int.Parse(SincRange.Text));
+            
             var sizeDifference = generatedCompareSignal.Values.Count - _reconstructedSignal.Values.Count;
             if (sizeDifference > 0)
             {

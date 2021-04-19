@@ -83,7 +83,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="120"/>
                     <RowDefinition />
-                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
@@ -133,8 +133,9 @@
                 </Grid>
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition  Width="10" />
@@ -145,6 +146,8 @@
                     <TextBox Grid.Row="0" Grid.Column="2" Name="HistogramSections" Text="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     <TextBlock Grid.Row="1" Grid.Column="1" Text="Quantization bits" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <TextBox Grid.Row="1" Grid.Column="2" Name="QuantizationBits" Text="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Sinc range" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="2" Grid.Column="2" Name="SincRange" Text="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 </Grid>
             </Grid>
         </Grid>
