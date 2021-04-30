@@ -31,6 +31,7 @@ namespace SignalProcessing
         public SeriesCollection seriesCollection { get; set; }
         private Signal _generatedSignal;
         private Signal _reconstructedSignal;
+        private Signal _quantised;
         private Signal _groundTruthSignal;
         private Signal _loadedSignal1;
         private Signal _loadedSignal2;
@@ -61,14 +62,15 @@ namespace SignalProcessing
             ReconstructorComboBox.Items.Add("Sinc Interpolation");
 
             seriesCollection = new SeriesCollection();
-            seriesCollection.Add(new ScatterSeries()
-                //  {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Blue});
+            seriesCollection.Add(new ScatterSeries
                 {Fill = Brushes.Blue, Stroke = Brushes.Blue});
             seriesCollection.Add(new LineSeries
                 {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Brown});
             seriesCollection.Add(new LineSeries
                 {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Gray});
             SignalChart.Series = seriesCollection;
+            seriesCollection.Add(new ScatterSeries
+                {Fill = Brushes.Red, Stroke = Brushes.Red});
         }
 
         public void GenerateChart(object obj, RoutedEventArgs routedEventArgs)
@@ -156,11 +158,11 @@ namespace SignalProcessing
                 ? int.Parse(QuantizationBits.Text)
                 : 8;
             var quantisation = new SignalQuantisation(quantisationBits);
-            var quantised = quantisation.Quantise(_generatedSignal);
+            _quantised = quantisation.Quantise(_generatedSignal);
             var signalReconstructor = new SignalReconstructor();
             _reconstructedSignal = ReconstructorComboBox.SelectedIndex == 0
-                ? signalReconstructor.ZeroOrderHold(quantised)
-                : signalReconstructor.SincInterpolation(quantised, int.Parse(SincRange.Text));
+                ? signalReconstructor.ZeroOrderHold(_quantised)
+                : signalReconstructor.SincInterpolation(_quantised, int.Parse(SincRange.Text));
             
             var sizeDifference = generatedCompareSignal.Values.Count - _reconstructedSignal.Values.Count;
             if (sizeDifference > 0)
@@ -179,10 +181,12 @@ namespace SignalProcessing
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("====================");
             sb.AppendLine("Quantisation-Source");
-            sb.AppendLine("MSE: " + Math.Round(SimilarityMetric.ComputeMSE(_generatedSignal, quantised), 6));
-            sb.AppendLine("SNR: " + Math.Round(SimilarityMetric.ComputeSNR(_generatedSignal, quantised), 6));
-            sb.AppendLine("PSNR: " + Math.Round(SimilarityMetric.ComputePSNR(_generatedSignal, quantised), 6));
-            sb.AppendLine("MD: " + Math.Round(SimilarityMetric.ComputeMD(_generatedSignal, quantised), 6));
+            sb.AppendLine("MSE: " + Math.Round(SimilarityMetric.ComputeMSE(_generatedSignal, _quantised), 6));
+            sb.AppendLine("SNR: " + Math.Round(SimilarityMetric.ComputeSNR(_generatedSignal, _quantised), 6));
+            sb.AppendLine("PSNR: " + Math.Round(SimilarityMetric.ComputePSNR(_generatedSignal, _quantised), 6));
+            sb.AppendLine("MD: " + Math.Round(SimilarityMetric.ComputeMD(_generatedSignal, _quantised), 6));
+            sb.AppendLine("ENOB: " +
+                          Math.Round(SimilarityMetric.ComputeENOB(_generatedSignal, _quantised), 6));
             sb.AppendLine("====================");
             sb.AppendLine("Reconstruction-Source");
             sb.AppendLine("MSE: " +
@@ -196,6 +200,20 @@ namespace SignalProcessing
             sb.AppendLine("ENOB: " +
                           Math.Round(SimilarityMetric.ComputeENOB(generatedCompareSignal, _reconstructedSignal), 6));
             sb.AppendLine("====================");
+       //     latex purpose
+       //     sb.AppendLine("\\hline");
+       //     sb.AppendLine("\\"+"textbf MSE &" + Math.Round(SimilarityMetric.ComputeMSE(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputeMSE(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
+       //     sb.AppendLine("\\hline");
+       //     sb.AppendLine("\\"+"textbf SNR &" + Math.Round(SimilarityMetric.ComputeSNR(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputeSNR(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
+       //     sb.AppendLine("\\hline");
+       //     sb.AppendLine("\\"+"textbf PSNR &" + Math.Round(SimilarityMetric.ComputePSNR(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputePSNR(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
+       //     sb.AppendLine("\\hline");
+       //     sb.AppendLine("\\"+"textbf MD &" + Math.Round(SimilarityMetric.ComputeMD(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputeMD(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
+       //     sb.AppendLine("\\hline");
+       //     sb.AppendLine("\\"+"textbf ENOB &" + Math.Round(SimilarityMetric.ComputeENOB(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputeENOB(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
+       //     sb.AppendLine("\\hline");
+            
+            
             SignalTextAverages.Text += sb.ToString();
 
             ShowGenerated.IsEnabled = true;
@@ -206,7 +224,7 @@ namespace SignalProcessing
         public void ShowGeneratedSignal(object obj, RoutedEventArgs routedEventArgs)
         {
             ShowCharts(_generatedSignal);
-            ShowReconstructionChart(_reconstructedSignal);
+            ShowReconstructionChart(_reconstructedSignal, _quantised);
             ShowGroundTruthSignal(_groundTruthSignal);
         }
 
@@ -257,10 +275,12 @@ namespace SignalProcessing
             SignalTextAverages.Text += sb.ToString();
         }
 
-        public void ShowReconstructionChart(Signal signal)
+        public void ShowReconstructionChart(Signal signal, Signal quantised)
         {
             seriesCollection[1].Values = new ChartValues<ObservablePoint>();
+            seriesCollection[3].Values = new ChartValues<ObservablePoint>();
             signal.Values.ForEach(e => seriesCollection[1].Values.Add(new ObservablePoint(e.X, e.Y)));
+            quantised.Values.ForEach(e => seriesCollection[3].Values.Add(new ObservablePoint(e.X, e.Y)));
         }
 
         public void ShowGroundTruthSignal(Signal signal)
