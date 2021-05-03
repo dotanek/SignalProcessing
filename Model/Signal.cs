@@ -157,23 +157,17 @@ namespace SignalProcessing.Model
         override 
         public String ToString()
         {
-            String str = "";
-            str += "StartTime: " + StartTime + "\n";
-            str += "Period: " + Period + "\n";
-            str += "Frequency: " + Frequency + "\n";
-            str += "Values: \n";
-            var sb = new StringBuilder();
-            sb.Append(str);
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("StartTime: " + StartTime);
+            stringBuilder.AppendLine("Period: " + Period);
+            stringBuilder.AppendLine("Frequency: " + Frequency);
+            stringBuilder.AppendLine("Values:");
             foreach (var point in Values)
             {
-                sb.AppendLine(Math.Round(point.Y, 4).ToString());
+                stringBuilder.AppendLine(Math.Round(point.Y, 4).ToString("0.0000"));
             }
-            //for (int i = 0; i < Values.Count; i++)
-            //{
-            //    str += Values.ElementAt(i).Y + "\n";
-            //}
 
-            return sb.ToString();
+            return stringBuilder.ToString();
         }
     }
 }

@@ -200,20 +200,20 @@ namespace SignalProcessing
             sb.AppendLine("ENOB: " +
                           Math.Round(SimilarityMetric.ComputeENOB(generatedCompareSignal, _reconstructedSignal), 6));
             sb.AppendLine("====================");
-       //     latex purpose
-       //     sb.AppendLine("\\hline");
-       //     sb.AppendLine("\\"+"textbf MSE &" + Math.Round(SimilarityMetric.ComputeMSE(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputeMSE(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
-       //     sb.AppendLine("\\hline");
-       //     sb.AppendLine("\\"+"textbf SNR &" + Math.Round(SimilarityMetric.ComputeSNR(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputeSNR(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
-       //     sb.AppendLine("\\hline");
-       //     sb.AppendLine("\\"+"textbf PSNR &" + Math.Round(SimilarityMetric.ComputePSNR(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputePSNR(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
-       //     sb.AppendLine("\\hline");
-       //     sb.AppendLine("\\"+"textbf MD &" + Math.Round(SimilarityMetric.ComputeMD(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputeMD(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
-       //     sb.AppendLine("\\hline");
-       //     sb.AppendLine("\\"+"textbf ENOB &" + Math.Round(SimilarityMetric.ComputeENOB(_generatedSignal, quantised), 6)+" &"+Math.Round(SimilarityMetric.ComputeENOB(generatedCompareSignal, _reconstructedSignal), 6)+" \\\\");
-       //     sb.AppendLine("\\hline");
-            
-            
+            //latex purpose
+            //sb.AppendLine("\\hline");
+            //sb.AppendLine("\\" + "textbf MSE &" + Math.Round(SimilarityMetric.ComputeMSE(_generatedSignal, quantised), 6) + " &" + Math.Round(SimilarityMetric.ComputeMSE(generatedCompareSignal, _reconstructedSignal), 6) + " \\\\");
+            //sb.AppendLine("\\hline");
+            //sb.AppendLine("\\" + "textbf SNR &" + Math.Round(SimilarityMetric.ComputeSNR(_generatedSignal, quantised), 6) + " &" + Math.Round(SimilarityMetric.ComputeSNR(generatedCompareSignal, _reconstructedSignal), 6) + " \\\\");
+            //sb.AppendLine("\\hline");
+            //sb.AppendLine("\\" + "textbf PSNR &" + Math.Round(SimilarityMetric.ComputePSNR(_generatedSignal, quantised), 6) + " &" + Math.Round(SimilarityMetric.ComputePSNR(generatedCompareSignal, _reconstructedSignal), 6) + " \\\\");
+            //sb.AppendLine("\\hline");
+            //sb.AppendLine("\\" + "textbf MD &" + Math.Round(SimilarityMetric.ComputeMD(_generatedSignal, quantised), 6) + " &" + Math.Round(SimilarityMetric.ComputeMD(generatedCompareSignal, _reconstructedSignal), 6) + " \\\\");
+            //sb.AppendLine("\\hline");
+            //sb.AppendLine("\\" + "textbf ENOB &" + Math.Round(SimilarityMetric.ComputeENOB(_generatedSignal, quantised), 6) + " &" + Math.Round(SimilarityMetric.ComputeENOB(generatedCompareSignal, _reconstructedSignal), 6) + " \\\\");
+            //sb.AppendLine("\\hline");
+
+
             SignalTextAverages.Text += sb.ToString();
 
             ShowGenerated.IsEnabled = true;
