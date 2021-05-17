@@ -20,6 +20,7 @@ using LiveCharts.Defaults;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using SignalProcessing.Logic.Sensor;
+using static SignalProcessing.Logic.SignalFilter;
 
 namespace SignalProcessing
 {
@@ -60,6 +61,9 @@ namespace SignalProcessing
             SignalComboBox.ItemsSource = Enum.GetValues(typeof(SignalGenerator.Type)).Cast<SignalGenerator.Type>();
             ReconstructorComboBox.Items.Add("Zero Order Hold");
             ReconstructorComboBox.Items.Add("Sinc Interpolation");
+
+            FilterType.ItemsSource = Enum.GetValues(typeof(SignalFilter.FilterType)).Cast<SignalFilter.FilterType>();
+            WindowType.ItemsSource = Enum.GetValues(typeof(SignalFilter.WindowType)).Cast<SignalFilter.WindowType>();
 
             seriesCollection = new SeriesCollection();
             seriesCollection.Add(new LineSeries
@@ -274,7 +278,7 @@ namespace SignalProcessing
             sb.Append("\nVariation = ").Append(Math.Round(signal.Variation(), 6));
             sb.Append("\nAveragePower = ").Append(Math.Round(signal.AveragePower(), 6));
 
-            SignalTextAverages.Text += sb.ToString();
+            SignalTextAverages.Text = sb.ToString();
         }
 
         public void ShowReconstructionChart(Signal signal, Signal quantised)
@@ -341,6 +345,9 @@ namespace SignalProcessing
             return (signal, dlg.SafeFileName);
         }
 
+        public void ShowMeasureResult(object obj, RoutedEventArgs routedEventArgs) {
+            seriesCollection[0].Values = new ChartValues<ObservablePoint>(_resultSignal.Values.Select(v => new ObservablePoint(v.X, v.Y)));
+        }
         public void ShowResultSignal(object obj, RoutedEventArgs routedEventArgs)
         {
             ShowCharts(_resultSignal);
@@ -350,13 +357,18 @@ namespace SignalProcessing
         {
             Signal s1 = _loadedSignal1;
 
+            double f0 = Convert.ToDouble(FrequencyCut.Text);
+            int M = Convert.ToInt32(Magnitude.Text);
+            FilterType ftype = (FilterType)FilterType.SelectedItem;
+            WindowType wtype = (WindowType)WindowType.SelectedItem;
+
             SignalFilter signalFilter = new SignalFilter
             {
                 Fp = s1.Frequency,
-                F0 = 10,
-                M = 100,
-                Filter = SignalFilter.FilterType.Bandpass,
-                Window = SignalFilter.WindowType.Hamming,
+                F0 = f0,
+                M = M,
+                Filter = ftype,
+                Window = wtype
             };
             signalFilter.Generate();
 
@@ -373,11 +385,17 @@ namespace SignalProcessing
             double probeSignalPeriod = Convert.ToDouble(ProbeSignalPeriod.Text);
             double probeSamplingFrequency = Convert.ToDouble(ProbeSamplingFrequency.Text);
             int bufforSize = Convert.ToInt32(BufforSize.Text);
-            double time = Convert.ToInt32(MeasureTime.Text);
+            double timeUnit = Convert.ToDouble(TimeUnit.Text);
+            double correlationTime = Convert.ToInt32(CorrelationTime.Text);
+            double reportPeriodStart = Convert.ToDouble(ReportPeriodStart.Text);
+            double reportPeriodStop = Convert.ToDouble(ReportPeriodStop.Text);
 
 
             PhysicalEnvironment environment = new PhysicalEnvironment
             {
+                TimeUnit = timeUnit,
+                ReportPeriodStart = reportPeriodStart,
+                ReportPeriodEnd = reportPeriodStop,
                 ObjectVelocity = objectVelocity,
                 ObjectStartingDistance = startingDistance,
             };
@@ -391,19 +409,43 @@ namespace SignalProcessing
 
             environment.Antenna = antenna;
 
-            double distance = environment.MeasureDistance(time);
+            double distance = environment.MeasureDistance(correlationTime);
+            Signal correlation = antenna.GetCorrelationAsSignal();
+            _resultSignal = correlation;
 
-            double step = 1 / antenna.SamplingFrequency;
+            List<Tuple<double,double,double>> measurements = environment.MeasureDistanceOnTimePeriod(); // time, true distance, computed distance
 
-            List<ObservablePoint> values = new List<ObservablePoint>();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("Period measurements:");
+            stringBuilder.AppendLine("------------");
 
-            for (int j = 0; j < antenna.CorrelatedSignalSamples.Count; j++)
+            foreach (Tuple<double,double,double> measurement in measurements)
             {
-                values.Add(new ObservablePoint(j * step, antenna.CorrelatedSignalSamples.ElementAt(j)));
+                stringBuilder.AppendLine("Time: " + measurement.Item1);
+                stringBuilder.AppendLine("True distance: " + measurement.Item2);
+                stringBuilder.AppendLine("Computed distance: " + measurement.Item3);
+                stringBuilder.AppendLine("Error: " + Math.Abs(measurement.Item2 - measurement.Item3));
+                stringBuilder.AppendLine("------------");
             }
 
-            seriesCollection[0].Values = new ChartValues<ObservablePoint>(values);
-            SignalTextAverages.Text = "Distance: " + distance.ToString() + "m";
+            SignalTextValues.Text = stringBuilder.ToString();
+
+            stringBuilder.Clear();
+
+            double objectDistance = startingDistance + correlationTime * objectVelocity;
+            double signalDelay = objectDistance / environment.DisperseVelocity * 2;
+            double computedDistance = environment.MeasureDistance(correlationTime);
+
+            stringBuilder.AppendLine("Moment measurement:");
+            stringBuilder.AppendLine("------------");
+            stringBuilder.AppendLine("Time: " + correlationTime);
+            stringBuilder.AppendLine("True delay: " + signalDelay);
+            stringBuilder.AppendLine("True distance: " + objectDistance);
+            stringBuilder.AppendLine("Distance: " + computedDistance);
+            stringBuilder.AppendLine("Error: " + Math.Abs(objectDistance - computedDistance));
+            stringBuilder.AppendLine("------------");
+
+            SignalTextAverages.Text = stringBuilder.ToString();
         }
 
         public void AntennaTesting(object obj, RoutedEventArgs routedEventArgs)

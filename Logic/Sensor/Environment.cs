@@ -43,14 +43,22 @@ namespace SignalProcessing.Logic.Sensor
             return measuredDistance;
         }
 
-        public List<Tuple<double,double>> MeasureDistanceOnTimePeriod()
+        public List<Tuple<double,double,double>> MeasureDistanceOnTimePeriod() // <time,trueDistance,computedDistance>
         {
-            List<Tuple<double, double>> measurements = new List<Tuple<double, double>>();
+            List<Tuple<double,double,double>> measurements = new List<Tuple<double,double,double>>();
 
             for (double t = ReportPeriodStart; t <= ReportPeriodEnd; t += TimeUnit)
             {
-                double distance = MeasureDistance(t);
-                measurements.Add(new Tuple<double,double>(t,distance));
+                double objectDistance = ObjectStartingDistance + t * ObjectVelocity;
+                double signalDelay = objectDistance / DisperseVelocity * 2;
+
+                Antenna.SampleSignals(t, signalDelay);
+                Antenna.CorrelateSignals();
+
+                double measuredDelay = Antenna.MeasureDelay();
+                double measuredDistance = (measuredDelay * DisperseVelocity) / 2;
+
+                measurements.Add(new Tuple<double,double,double>(t,objectDistance,measuredDistance));
             }
 
             return measurements;

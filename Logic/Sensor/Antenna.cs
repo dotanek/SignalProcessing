@@ -1,8 +1,11 @@
-﻿using System;
+﻿using LiveCharts.Defaults;
+using SignalProcessing.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SignalProcessing.Logic
 {
@@ -70,7 +73,7 @@ namespace SignalProcessing.Logic
 
         public double MeasureDelay()
         {
-            List<double> correlationSignalSamplesHalf = CorrelatedSignalSamples.Skip((CorrelatedSignalSamples.Count + 1) / 2).ToList();
+            List<double> correlationSignalSamplesHalf = CorrelatedSignalSamples.Skip(CorrelatedSignalSamples.Count / 2).ToList();
 
             int maxIndex = 0;
 
@@ -85,12 +88,26 @@ namespace SignalProcessing.Logic
             return maxIndex * (1 / SamplingFrequency);
         }
 
+        public Signal GetCorrelationAsSignal()
+        {
+            List<Point> values = new List<Point>();
+            double step = 1 / SamplingFrequency;
+
+            for (int i = 0; i < CorrelatedSignalSamples.Count; i++)
+            {
+                values.Add(new Point(i * step, CorrelatedSignalSamples.ElementAt(i)));
+            }
+
+            return new Signal(0, 0, 0, true, SamplingFrequency, values);
+        }
+
         private double GetProbeSample(double time)
         {
             double sin1Sample = Math.Sin((2 * Math.PI / SignalPeriod) * time);
             double sin2Sample = Math.Sin((2 * Math.PI / (SignalPeriod/2)) * time);
+            double sin3Sample = Math.Sin((2 * Math.PI / (SignalPeriod/4)) * time);
 
-            return sin1Sample + sin2Sample;
+            return sin1Sample + sin2Sample + sin3Sample;
         }
     }
 }
