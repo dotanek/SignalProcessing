@@ -61,30 +61,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Logic\SignalOperations.cs" />
-    <Compile Include="Logic\SignalQuantisation.cs" />
-    <Compile Include="Logic\SignalReconstructor.cs" />
-    <Compile Include="Logic\SimilarityMetric.cs" />
-    <Compile Include="View\ChartWindow.xaml.cs">
-      <DependentUpon>ChartWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Commands\UpdateCurrentViewModelCommand.cs" />
-    <Compile Include="View\Controls\NavigationBar.xaml.cs">
-      <DependentUpon>NavigationBar.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Model\BaseViewModel.cs" />
-    <Compile Include="View\Model\GenerationViewModel.cs" />
-    <Compile Include="View\Model\HomeViewModel.cs" />
-    <Compile Include="View\Model\LoadViewModel.cs" />
-    <Compile Include="View\Model\MainViewModel.cs" />
-    <Compile Include="View\Model\OperationsViewModel.cs" />
-    <Compile Include="View\State\Navigators\INavigator.cs" />
-    <Compile Include="View\State\Navigators\Navigator.cs" />
-    <Page Include="View\ChartWindow.xaml" />
-    <Page Include="View\Controls\NavigationBar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="Logic\Sensor\Antenna.cs" />
+    <Compile Include="Logic\Sensor\Environment.cs" />
+    <Compile Include="Logic\Signal\SignalFilter.cs" />
+    <Compile Include="Logic\Signal\SignalOperations.cs" />
+    <Compile Include="Logic\Signal\SignalQuantisation.cs" />
+    <Compile Include="Logic\Signal\SignalReconstructor.cs" />
+    <Compile Include="Logic\Signal\SimilarityMetric.cs" />
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -93,16 +76,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logic\SignalGenerator.cs" />
+    <Compile Include="Logic\Signal\SignalGenerator.cs" />
     <Compile Include="Model\Signal.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\Styles\Common.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

@@ -8,7 +8,6 @@
         Title="MainWindow" Height="624.5" Width="1224"
         ResizeMode="NoResize"
         WindowStyle="ToolWindow"
-        xmlns:Controls="clr-namespace:SignalProcessing.View.Controls"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf">
 
     <Grid Margin="0,10,0,10">
@@ -83,7 +82,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="120"/>
                     <RowDefinition />
-                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="240"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
@@ -119,6 +118,11 @@
                         <RowDefinition Height="20" />
                         <RowDefinition Height="20" />
                         <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="10"/>
@@ -129,18 +133,32 @@
                     <Button Grid.Row="1" Grid.Column="1" Content="Subtract" Click="SubtractSignals" />
                     <Button Grid.Row="2" Grid.Column="1" Content="Multiply" Click="MultiplySignals" />
                     <Button Grid.Row="3" Grid.Column="1" Content="Divide" Click="DivideSignals" />
-                    <Button Grid.Row="5" Grid.Column="1" Content="Show result" Click="ShowResultSignal"/>
+                    <Button Grid.Row="4" Grid.Column="1" Content="Convolute" Click="ConvoluteSignals" />
+                    <Button Grid.Row="5" Grid.Column="1" Content="Correlate" Click="CorrelateSignals" />
+                    <Button Grid.Row="7" Grid.Column="1" Content="Show result" Click="ShowResultSignal"/>
+                    <Button Grid.Row="9" Grid.Column="1" Content="Filter" Click="Filter"/>
+                    <Button Grid.Row="10" Grid.Column="1" Content="Measure distance" Click="MeasureDistance"/>
                 </Grid>
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"></RowDefinition>
                         <RowDefinition Height="20"></RowDefinition>
                         <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition  Width="10" />
-                        <ColumnDefinition  Width="110" />
-                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition  />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="10" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="1" Text="Histogram sections" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <TextBox Grid.Row="0" Grid.Column="2" Name="HistogramSections" Text="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
@@ -148,6 +166,25 @@
                     <TextBox Grid.Row="1" Grid.Column="2" Name="QuantizationBits" Text="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     <TextBlock Grid.Row="2" Grid.Column="1" Text="Sinc range" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <TextBox Grid.Row="2" Grid.Column="2" Name="SincRange" Text="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Sample amount first signal" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="3" Grid.Column="2" Name="S1SampleAmount" Text="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Sample amount second signal" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="4" Grid.Column="2" Name="S2SampleAmount" Text="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="Object starting distance" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="5" Grid.Column="2" Name="ObjectDistance" Text="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <TextBlock Grid.Row="6" Grid.Column="1" Text="Object velocity" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="6" Grid.Column="2" Name="ObjectVelocity" Text="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <TextBlock Grid.Row="7" Grid.Column="1" Text="Probe signal period" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="7" Grid.Column="2" Name="ProbeSignalPeriod" Text="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Row="8" Grid.Column="1" Text="Probe sampling frequency" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="8" Grid.Column="2" Name="ProbeSamplingFrequency" Text="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <TextBlock Grid.Row="9" Grid.Column="1" Text="Buffor size" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="9" Grid.Column="2" Name="BufforSize" Text="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <TextBlock Grid.Row="10" Grid.Column="1" Text="Time" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="10" Grid.Column="2" Name="MeasureTime" Text="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    
                 </Grid>
             </Grid>
         </Grid>
