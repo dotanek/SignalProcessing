@@ -17,9 +17,10 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using SignalProcessing.Model;
 using LiveCharts.Defaults;
-using SignalProcessing.View;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using SignalProcessing.Logic.Sensor;
+using static SignalProcessing.Logic.SignalFilter;
 
 namespace SignalProcessing
 {
@@ -61,16 +62,21 @@ namespace SignalProcessing
             ReconstructorComboBox.Items.Add("Zero Order Hold");
             ReconstructorComboBox.Items.Add("Sinc Interpolation");
 
+            FilterType.ItemsSource = Enum.GetValues(typeof(SignalFilter.FilterType)).Cast<SignalFilter.FilterType>();
+            WindowType.ItemsSource = Enum.GetValues(typeof(SignalFilter.WindowType)).Cast<SignalFilter.WindowType>();
+
             seriesCollection = new SeriesCollection();
-            seriesCollection.Add(new ScatterSeries
-                {Fill = Brushes.Blue, Stroke = Brushes.Blue});
             seriesCollection.Add(new LineSeries
+            { PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.DarkBlue });
+            /*seriesCollection.Add(new LineSeries
+            { PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.DarkGreen });*/
+            /*seriesCollection.Add(new LineSeries
                 {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Brown});
             seriesCollection.Add(new LineSeries
                 {PointGeometry = null, Fill = Brushes.Transparent, Stroke = Brushes.Gray});
-            SignalChart.Series = seriesCollection;
             seriesCollection.Add(new ScatterSeries
-                {Fill = Brushes.Red, Stroke = Brushes.Red});
+                {Fill = Brushes.Red, Stroke = Brushes.Red});*/
+            SignalChart.Series = seriesCollection;
         }
 
         public void GenerateChart(object obj, RoutedEventArgs routedEventArgs)
@@ -224,8 +230,8 @@ namespace SignalProcessing
         public void ShowGeneratedSignal(object obj, RoutedEventArgs routedEventArgs)
         {
             ShowCharts(_generatedSignal);
-            ShowReconstructionChart(_reconstructedSignal, _quantised);
-            ShowGroundTruthSignal(_groundTruthSignal);
+            //ShowReconstructionChart(_reconstructedSignal, _quantised);
+            //ShowGroundTruthSignal(_groundTruthSignal);
         }
 
         public void ShowCharts(Signal signal)
@@ -272,7 +278,7 @@ namespace SignalProcessing
             sb.Append("\nVariation = ").Append(Math.Round(signal.Variation(), 6));
             sb.Append("\nAveragePower = ").Append(Math.Round(signal.AveragePower(), 6));
 
-            SignalTextAverages.Text += sb.ToString();
+            SignalTextAverages.Text = sb.ToString();
         }
 
         public void ShowReconstructionChart(Signal signal, Signal quantised)
@@ -335,15 +341,139 @@ namespace SignalProcessing
             var binaryFormatter = new BinaryFormatter();
             Stream stream = File.Open(filename, FileMode.Open);
             var signal = (Signal) binaryFormatter.Deserialize(stream);
-            //Window chartWindow = new ChartWindow(signal, int.TryParse(HistogramInterval.Text, out _) ? int.Parse(HistogramInterval.Text) : 15);
-            //chartWindow.Show();
             ReadyText.Text = "Ready";
             return (signal, dlg.SafeFileName);
         }
 
+        public void ShowMeasureResult(object obj, RoutedEventArgs routedEventArgs) {
+            seriesCollection[0].Values = new ChartValues<ObservablePoint>(_resultSignal.Values.Select(v => new ObservablePoint(v.X, v.Y)));
+        }
         public void ShowResultSignal(object obj, RoutedEventArgs routedEventArgs)
         {
             ShowCharts(_resultSignal);
+        }
+
+        public void Filter(object obj, RoutedEventArgs routedEventArgs)
+        {
+            Signal s1 = _loadedSignal1;
+
+            double f0 = Convert.ToDouble(FrequencyCut.Text);
+            int M = Convert.ToInt32(Magnitude.Text);
+            FilterType ftype = (FilterType)FilterType.SelectedItem;
+            WindowType wtype = (WindowType)WindowType.SelectedItem;
+
+            SignalFilter signalFilter = new SignalFilter
+            {
+                Fp = s1.Frequency,
+                F0 = f0,
+                M = M,
+                Filter = ftype,
+                Window = wtype
+            };
+            signalFilter.Generate();
+
+            Signal s2 = signalFilter.GetAsSignal();
+
+            _resultSignal = SignalOperations.Convolute(s1,s2,s1.Values.Count,s2.Values.Count);
+            ShowCharts(_resultSignal);
+        }
+
+        public void MeasureDistance(object obj, RoutedEventArgs routedEventArgs)
+        {
+            double startingDistance = Convert.ToDouble(ObjectDistance.Text);
+            double objectVelocity = Convert.ToDouble(ObjectVelocity.Text);
+            double probeSignalPeriod = Convert.ToDouble(ProbeSignalPeriod.Text);
+            double probeSamplingFrequency = Convert.ToDouble(ProbeSamplingFrequency.Text);
+            int bufforSize = Convert.ToInt32(BufforSize.Text);
+            double timeUnit = Convert.ToDouble(TimeUnit.Text);
+            double correlationTime = Convert.ToInt32(CorrelationTime.Text);
+            double reportPeriodStart = Convert.ToDouble(ReportPeriodStart.Text);
+            double reportPeriodStop = Convert.ToDouble(ReportPeriodStop.Text);
+
+
+            PhysicalEnvironment environment = new PhysicalEnvironment
+            {
+                TimeUnit = timeUnit,
+                ReportPeriodStart = reportPeriodStart,
+                ReportPeriodEnd = reportPeriodStop,
+                ObjectVelocity = objectVelocity,
+                ObjectStartingDistance = startingDistance,
+            };
+
+            Antenna antenna = new Antenna
+            {
+                SignalPeriod = probeSignalPeriod,
+                SamplingFrequency = probeSamplingFrequency,
+                BufforSize = bufforSize
+            };
+
+            environment.Antenna = antenna;
+
+            double distance = environment.MeasureDistance(correlationTime);
+            Signal correlation = antenna.GetCorrelationAsSignal();
+            _resultSignal = correlation;
+
+            List<Tuple<double,double,double>> measurements = environment.MeasureDistanceOnTimePeriod(); // time, true distance, computed distance
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("Period measurements:");
+            stringBuilder.AppendLine("------------");
+
+            foreach (Tuple<double,double,double> measurement in measurements)
+            {
+                stringBuilder.AppendLine("Time: " + measurement.Item1);
+                stringBuilder.AppendLine("True distance: " + measurement.Item2);
+                stringBuilder.AppendLine("Computed distance: " + measurement.Item3);
+                stringBuilder.AppendLine("Error: " + Math.Abs(measurement.Item2 - measurement.Item3));
+                stringBuilder.AppendLine("------------");
+            }
+
+            SignalTextValues.Text = stringBuilder.ToString();
+
+            stringBuilder.Clear();
+
+            double objectDistance = startingDistance + correlationTime * objectVelocity;
+            double signalDelay = objectDistance / environment.DisperseVelocity * 2;
+            double computedDistance = environment.MeasureDistance(correlationTime);
+
+            stringBuilder.AppendLine("Moment measurement:");
+            stringBuilder.AppendLine("------------");
+            stringBuilder.AppendLine("Time: " + correlationTime);
+            stringBuilder.AppendLine("True delay: " + signalDelay);
+            stringBuilder.AppendLine("True distance: " + objectDistance);
+            stringBuilder.AppendLine("Distance: " + computedDistance);
+            stringBuilder.AppendLine("Error: " + Math.Abs(objectDistance - computedDistance));
+            stringBuilder.AppendLine("------------");
+
+            SignalTextAverages.Text = stringBuilder.ToString();
+        }
+
+        public void AntennaTesting(object obj, RoutedEventArgs routedEventArgs)
+        {
+            PhysicalEnvironment environment = new PhysicalEnvironment();
+            //List<Tuple<double, double>> measurements = environment.MeasureDistanceOnTimePeriod(0, 20);
+
+            double distance = environment.MeasureDistance(10);
+
+            double step = 1 / environment.Antenna.SamplingFrequency;
+
+            List<ObservablePoint> values = new List<ObservablePoint>();
+
+            for (int j = 0; j < environment.Antenna.CorrelatedSignalSamples.Count; j++)
+            {
+                values.Add(new ObservablePoint(j * step, environment.Antenna.CorrelatedSignalSamples.ElementAt(j)));
+            }
+
+            seriesCollection[0].Values = new ChartValues<ObservablePoint>(values);
+            SignalTextAverages.Text = distance.ToString();
+
+            //double step = 1 / environment.antenna.SamplingFrequency;
+            //for (int i = 0; i < environment.antenna.CorrelatedSignalSamples.Count; i++)
+            //{
+            //    values.Add(new ObservablePoint(i * step, environment.antenna.CorrelatedSignalSamples.ElementAt(i)));
+            //}
+
+            //seriesCollection[0].Values = new ChartValues<ObservablePoint>(values);
         }
 
         public void AddSignals(object obj, RoutedEventArgs routedEventArgs)
@@ -351,8 +481,6 @@ namespace SignalProcessing
             ReadyText.Text = "Adding...";
             if (_loadedSignal1 == null && _loadedSignal2 == null) return;
             _resultSignal = SignalOperations.Add(_loadedSignal1, _loadedSignal2);
-            //Window chartWindow = new ChartWindow(sum, int.TryParse(HistogramInterval.Text, out _) ? int.Parse(HistogramInterval.Text) : 15);
-            //chartWindow.Show();
             SaveSignalToFile(_resultSignal, "ADD");
             ReadyText.Text = "Ready";
         }
@@ -362,8 +490,6 @@ namespace SignalProcessing
             ReadyText.Text = "Subtracting...";
             if (_loadedSignal1 == null && _loadedSignal2 == null) return;
             _resultSignal = SignalOperations.Subtract(_loadedSignal1, _loadedSignal2);
-            //Window chartWindow = new ChartWindow(difference, int.TryParse(HistogramInterval.Text, out _) ? int.Parse(HistogramInterval.Text) : 15);
-            //chartWindow.Show();
             SaveSignalToFile(_resultSignal, "SUBTRACT");
             ReadyText.Text = "Ready";
         }
@@ -373,8 +499,6 @@ namespace SignalProcessing
             ReadyText.Text = "Multiplying...";
             if (_loadedSignal1 == null && _loadedSignal2 == null) return;
             _resultSignal = SignalOperations.Multiply(_loadedSignal1, _loadedSignal2);
-            //Window chartWindow = new ChartWindow(product, int.TryParse(HistogramInterval.Text, out _) ? int.Parse(HistogramInterval.Text) : 15);
-            //chartWindow.Show();
             SaveSignalToFile(_resultSignal, "MULTIPLY");
             ReadyText.Text = "Ready";
         }
@@ -384,9 +508,55 @@ namespace SignalProcessing
             if (_loadedSignal1 == null && _loadedSignal2 == null) return;
             ReadyText.Text = "Dividing...";
             _resultSignal = SignalOperations.Divide(_loadedSignal1, _loadedSignal2);
-            //Window chartWindow = new ChartWindow(quotient, int.TryParse(HistogramInterval.Text, out _) ? int.Parse(HistogramInterval.Text) : 15);
-            //chartWindow.Show();
             SaveSignalToFile(_resultSignal, "DIVIDE");
+            ReadyText.Text = "Ready";
+        }
+
+        public void ConvoluteSignals(object obj, RoutedEventArgs routedEventArgs)
+        {
+            if (_loadedSignal1 == null && _loadedSignal2 == null) return;
+            ReadyText.Text = "Convoluting...";
+
+            int s1SampleAmount = 0;
+            int s2SampleAmount = 0;
+            int temporaryInputValue;
+
+            if (int.TryParse(S1SampleAmount.Text, out temporaryInputValue))
+            {
+                s1SampleAmount = int.Parse(S1SampleAmount.Text);
+            }
+
+            if (int.TryParse(S2SampleAmount.Text, out temporaryInputValue))
+            {
+                s2SampleAmount = int.Parse(S2SampleAmount.Text);
+            }
+
+            _resultSignal = SignalOperations.Convolute(_loadedSignal1, _loadedSignal2,s1SampleAmount,s2SampleAmount);
+            SaveSignalToFile(_resultSignal, "CONVOLUTE");
+            ReadyText.Text = "Ready";
+        }
+
+        public void CorrelateSignals(object obj, RoutedEventArgs routedEventArgs)
+        {
+            if (_loadedSignal1 == null && _loadedSignal2 == null) return;
+            ReadyText.Text = "Correlating...";
+
+            int s1SampleAmount = 0;
+            int s2SampleAmount = 0;
+            int temporaryInputValue;
+
+            if (int.TryParse(S1SampleAmount.Text, out temporaryInputValue))
+            {
+                s1SampleAmount = int.Parse(S1SampleAmount.Text);
+            }
+
+            if (int.TryParse(S2SampleAmount.Text, out temporaryInputValue))
+            {
+                s2SampleAmount = int.Parse(S2SampleAmount.Text);
+            }
+
+            _resultSignal = SignalOperations.Correlate(_loadedSignal1, _loadedSignal2, s1SampleAmount, s2SampleAmount);
+            SaveSignalToFile(_resultSignal, "CORRELATE");
             ReadyText.Text = "Ready";
         }
     }
