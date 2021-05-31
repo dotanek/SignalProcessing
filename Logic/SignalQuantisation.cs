@@ -21,7 +21,7 @@ namespace SignalProcessing.Logic
 
             var values = source.Values.Select(e => e.Y)
                 .Select(value =>
-                    (int) Math.Floor( (value - levels.First() + 0.0001) / (levels.Last() - levels.First()) * (levels.Count -1) ))
+                    (int) Math.Floor( (value - levels.First() + 0.00000000001) / (levels.Last() - levels.First()) * (levels.Count -1) ))
                 .Select(levelIndex => levels[levelIndex]).ToList();
             
             var quantised = new Signal(source.StartTime, source.Duration, source.Period, source.Discrete, source.Frequency, source.Values);

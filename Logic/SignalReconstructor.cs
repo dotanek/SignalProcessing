@@ -40,10 +40,10 @@ namespace SignalProcessing.Logic
             {
                 var sum = 0.0;
                 int currentSampleIndex = reconstructedValues.Count / 4;
-                int lowerLimit = Math.Max(0, currentSampleIndex - range);
-                int higherLimit = Math.Min(source.Values.Count, currentSampleIndex + range);
+                int lowerLimit = Math.Max(0, currentSampleIndex - range + 1);
+                int higherLimit = Math.Min(source.Values.Count-1, currentSampleIndex + range);
                 
-                for (int j = lowerLimit; j < higherLimit; j++)
+                for (int j = lowerLimit; j <= higherLimit; j++)
                 {
                     sum += source.Values[j].Y * Sinc(t / (step*4) - j);
                 }
