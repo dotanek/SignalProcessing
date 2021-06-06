@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -67,6 +68,7 @@
     <Compile Include="Logic\Signal\SignalOperations.cs" />
     <Compile Include="Logic\Signal\SignalQuantisation.cs" />
     <Compile Include="Logic\Signal\SignalReconstructor.cs" />
+    <Compile Include="Logic\Signal\SignalTransformation.cs" />
     <Compile Include="Logic\Signal\SimilarityMetric.cs" />
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

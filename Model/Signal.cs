@@ -3,6 +3,7 @@ using LiveCharts.Defaults;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
@@ -20,6 +21,8 @@ namespace SignalProcessing.Model
         public bool Discrete { get; set; }
         public double Frequency { get; }
         public List<Point> Values { get; set; }
+        
+        public List<Complex> ComplexValue { get; set; }
 
         public Signal(double startTime, double duration, double period, bool discrete, double frequency, List<Point> values)
         {
@@ -29,6 +32,7 @@ namespace SignalProcessing.Model
             Values = values;
             Discrete = discrete;
             Frequency = frequency;
+            ComplexValue = new List<Complex>();
         }
 
         public double Average()
@@ -129,6 +133,8 @@ namespace SignalProcessing.Model
             Frequency = (double)info.GetValue("Frequency", typeof(double));
 
             List<double> values = (List<double>)info.GetValue("Values", typeof(List<double>));
+            //List<Complex> complexValues = (List<Complex>)info.GetValue("ComplexValue", typeof(List<Complex>));
+            ComplexValue = (List<Complex>)info.GetValue("ComplexValue", typeof(List<Complex>));
             Values = new List<Point>();
             double step = 1.0 / Frequency;
             for (int i = 0; i < values.Count; i++)
@@ -152,6 +158,7 @@ namespace SignalProcessing.Model
             info.AddValue("Period", Period);
             info.AddValue("Frequency", Frequency);
             info.AddValue("Values", Values.Select(v => v.Y).ToList());
+            info.AddValue("ComplexValue", ComplexValue);
         }
 
         override 
